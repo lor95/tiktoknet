@@ -1,6 +1,5 @@
 from TikTokApi import TikTokApi # api wrapper import https://github.com/davidteather/TikTok-Api
 import pandas as pd
-from io import StringIO
 import json
 
 api = TikTokApi.get_instance(use_test_endpoints=True)
@@ -8,8 +7,6 @@ api = TikTokApi.get_instance(use_test_endpoints=True)
 def buildDatasetByHashtag(hashtag, _count):
     rows = []
     tiktoks = api.byHashtag(hashtag, count=_count, custom_verifyFp="")
-    #print(pd.read_json(StringIO(json.dumps(tiktoks[0]))))
-    #return df
     for tiktok in tiktoks:
         _row = {}
         for key in tiktok:
