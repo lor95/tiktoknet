@@ -3,9 +3,17 @@ import pandas as pd
 
 api = TikTokApi.get_instance(use_test_endpoints=True)
 
-def checkAvLikedPerc(hashtag): # prints tiktok liked list availability
+def checkAvLikedPerc(hashtag, _iter = 0): # prints tiktok liked list availability
     counter = 0
+    ct = 0
     df = pd.read_csv("./dataset/dataset_"+hashtag+".csv", sep=";")
+    den = df.shape[0]
+    if _iter > 0: # _iter != default
+        den = _iter
     for index, row in df.iterrows():
         counter += len(api.userLiked(row['author_id'],row['author_secUid'],count=1))
-    print("\n\nAvailability: " + str(round((counter/df.shape[0])*100, 2)) + "% (" + str(counter) + "/" + str(df.shape[0]) + ")")
+        ct += 1
+        if ct == _iter and den == _iter:
+            break # stop loop if target
+
+    print("\n\nAvailability: " + str(round((counter/den)*100, 2)) + "% (" + str(counter) + "/" + str(den) + ")")
