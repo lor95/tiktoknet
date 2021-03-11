@@ -1,3 +1,7 @@
+from TikTokApi import TikTokApi
 import lib.tiktok_dataset as td
 
-td.buildDatasetByHashtag("ITookANap",2) # was 100000
+api = TikTokApi.get_instance(use_test_endpoints=True)
+
+td.buildDatasetByHashtag(api, "ITookANap")
+td.pubAuthList(api, "ITookANap")

@@ -1,12 +1,10 @@
 from TikTokApi import TikTokApi
 import pandas as pd
 
-api = TikTokApi.get_instance(use_test_endpoints=True)
-
-def checkAvLikedPerc(hashtag, _iter = 0): # prints tiktok liked list availability
+def checkAvLikedPerc(api, dataset, _iter = 0): # prints tiktok liked list availability
     counter = 0
     ct = 0
-    df = pd.read_csv("./dataset/dataset_"+hashtag+".csv", sep=";")
+    df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
     den = df.shape[0]
     if _iter > 0: # _iter != default
         den = _iter
@@ -15,5 +13,4 @@ def checkAvLikedPerc(hashtag, _iter = 0): # prints tiktok liked list availabilit
         ct += 1
         if ct == _iter and den == _iter:
             break # stop loop if target
-
     print("\n\nAvailability: " + str(round((counter/den)*100, 2)) + "% (" + str(counter) + "/" + str(den) + ")")
