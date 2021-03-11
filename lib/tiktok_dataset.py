@@ -1,24 +1,21 @@
-from TikTokApi import TikTokApi # api wrapper import https://github.com/davidteather/TikTok-Api
+from TikTokApi import TikTokApi
 import pandas as pd
+import lib.utils as utils
 import json
 
-def buildDatasetByHashtag(api, hashtag, _count=10000):
-    rows = []
+def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
     tiktoks = api.byHashtag(hashtag, count=_count, custom_verifyFp="")
-    for tiktok in tiktoks:
-        _row = {}
-        for key in tiktok:
-            elem = tiktok.get(key)
-            if isinstance(elem, dict) or isinstance(elem, list):
-                if isinstance(elem, list):
-                    elem = elem[0]
-                for elem_k in elem:
-                    _row[key + "_" + elem_k] = str(elem.get(elem_k)).replace(";", "")
-            else:
-                _row[key] = str(elem).replace(";", "")
-        rows.append(_row)
-    print(pd.json_normalize(rows))
-    pd.json_normalize(rows).to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
+    df = utils.datasetHelper(tiktoks)
+    _id = ""
+    if url_orig:
+        tiktok = api.getTikTokByUrl(url_orig)
+        _id = tiktok["itemInfo"]["itemStruct"]["id"]
+        if _id not in list(df["id"]):
+            tiktokL = [tiktok["itemInfo"]["itemStruct"]]
+            df = df.append(utils.datasetHelper(tiktokL), ignore_index = True)
+    df['originalVideo'] = 0
+    df.loc[df['id'] == _id, 'originalVideo'] = 1 # search for the original video and flag it
+    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
 
 def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")

@@ -1,6 +1,22 @@
 from TikTokApi import TikTokApi
 import pandas as pd
 
+def datasetHelper(tiktoks):
+    rows = []
+    for tiktok in tiktoks:
+        _row = {}
+        for key in tiktok:
+            elem = tiktok.get(key)
+            if isinstance(elem, dict) or isinstance(elem, list):
+                if isinstance(elem, list):
+                    elem = elem[0]
+                for elem_k in elem:
+                    _row[key + "_" + elem_k] = str(elem.get(elem_k)).replace(";", "")
+            else:
+                _row[key] = str(elem).replace(";", "")
+        rows.append(_row)
+    return pd.json_normalize(rows)
+
 def checkAvLikedPerc(api, dataset, _iter = 0): # prints tiktok liked list availability
     counter = 0
     ct = 0
