@@ -19,24 +19,24 @@ def checkConnections(api, dataset): #dataset is the hashtag
         tiktoks = api.userLiked(row['author_id'],row['author_secUid'],count=10000)
         if(len(tiktoks) > 0):
             df2 = utils.datasetHelper(tiktoks)
-            print(df2)
+            df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
             for index, row in df2.iterrows():
                 if row["desc"].lower().find(dataset.lower()) != -1: # check if row contains tiktoks
                     df = df.append(row, ignore_index=True)
                 if row['id'] in list(df["id"]):
-                    if not df.loc[df['id'] == row["id"], 'likedBy_id']: # if cell is empty
+                    if not df.loc[df['id'] == row["id"], 'likedBy_id'].empty: # if cell is empty
                         df.loc[df['id'] == row["id"], 'likedBy_id'] = row["author_id"]
                         df.loc[df['id'] == row["id"], 'likedBy_secUid'] = row["author_secUid"]
                         df.loc[df['id'] == row["id"], 'likedBy_nickname'] = row["author_nickname"]
                     else:
-                        df_temp = df.loc[df['id'] == row["id"]]
+                        df_temp = df.loc[df['id'] == row["id"]] # to test
                         df_temp['idcopy'] = df_temp['id']
                         df_temp['id'] = df_temp['id'] + "_" + str(uuid.uuid4().hex)
                         df_temp["likedBy_id"] = row["author_id"]
                         df_temp["likedBy_secUid"] = row["author_secUid"]
                         df_temp["likedBy_nickname"] = row["author_nickname"]
                         df = df.append([df_temp], ignore_index=True)
-    df.drop_duplicates(inplace=True)
+    df.drop_duplicates(keep='first',inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False)
     #return True
 
@@ -67,5 +67,5 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
             df1 = df1.append(tempDict, ignore_index=True)
         #if df1.shape[0] == 4:
             #break           
-    df1.drop_duplicates(inplace=True)
+    df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
