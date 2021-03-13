@@ -19,7 +19,7 @@ def checkConnections(api, dataset): #dataset is the hashtag
         tiktoks = api.userLiked(row['author_id'],row['author_secUid'],count=10000)
         if(len(tiktoks) > 0):
             df2 = utils.datasetHelper(tiktoks)
-            df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
+            #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
             for index, row in df2.iterrows():
                 if row["desc"].lower().find(dataset.lower()) != -1: # check if row contains tiktoks
                     df = df.append(row, ignore_index=True)
