@@ -4,6 +4,28 @@ import lib.utils as utils
 import os
 import uuid
 
+def ETL(dataset):
+    df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
+    df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId','author_nickname','author_verified','author_secUid','music_id','music_title','music_authorName','stats_shareCount','stats_commentCount','stats_playCount','duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount','authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo']]
+    df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
+
+def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
+    df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
+    counter = 1
+    size = df.shape[0]
+    df1 = pd.DataFrame({'author_id': [], 'author_secUid': [], 'author_nickname': []}, dtype="string")
+    for index, row in df.iterrows():
+        print("Parsing: "+str(counter)+"/"+str(size))
+        counter += 1
+        if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
+            tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
+            df1 = df1.append(tempDict, ignore_index=True)
+        #if df1.shape[0] == 4:
+            #break           
+    df1.drop_duplicates(keep='first',inplace=True)
+    df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
+
+
 def checkConnections(api, dataset): #dataset is the hashtag
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
     df['likedBy_id'] = ""
@@ -52,8 +74,7 @@ def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
             df = df.append(utils.datasetHelper(tiktokL), ignore_index = True)
     df['originalVideo'] = 0
     df.loc[df['id'] == _id, 'originalVideo'] = 1 # search for the original video and flag it
-    df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId','author_nickname','author_verified','author_secUid','music_id','music_title','music_authorName','stats_shareCount','stats_commentCount','stats_playCount','duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount','authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo']]
-    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False) #save filtered dataset
+    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
 
 def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
@@ -66,7 +87,7 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
         if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
             tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
             df1 = df1.append(tempDict, ignore_index=True)
-        #if df1.shape[0] == 4:
-            #break           
+        if df1.shape[0] == 4:
+            break           
     df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)

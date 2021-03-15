@@ -9,6 +9,7 @@ challenges = { "itookanap":
 
 api = TikTokApi.get_instance(use_test_endpoints=True)
 
-#td.buildDatasetByHashtag(api, challenges["itookanap"]["name"], challenges["itookanap"]["url"], 10000)
-#td.pubAuthList(api, challenges["itookanap"]["name"])
+td.buildDatasetByHashtag(api, challenges["itookanap"]["name"], challenges["itookanap"]["url"], 10000)
+td.pubAuthList(api, challenges["itookanap"]["name"])
 td.checkConnections(api, challenges["itookanap"]["name"])
+td.ETL(challenges["itookanap"]["name"])
