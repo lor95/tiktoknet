@@ -52,7 +52,8 @@ def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
             df = df.append(utils.datasetHelper(tiktokL), ignore_index = True)
     df['originalVideo'] = 0
     df.loc[df['id'] == _id, 'originalVideo'] = 1 # search for the original video and flag it
-    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
+    df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId','author_nickname','author_verified','author_secUid','music_id','music_title','music_authorName','stats_shareCount','stats_commentCount','stats_playCount','duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount','authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo']]
+    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False) #save filtered dataset
 
 def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
