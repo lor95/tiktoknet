@@ -11,7 +11,12 @@ def ETL(dataset):
     'music_authorName','stats_shareCount','stats_commentCount','stats_playCount',
     'duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount',
     'authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo',
-    'likedBy_id','likedBy_secUid','likedBy_nickname']]
+    'likedBy_id','likedBy_secUid','likedBy_nickname']] # extract columns
+    df['originalVideo'] = df['originalVideo'].fillna(0)
+    try:
+        df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
+    except:
+        print("createTime column already converted")
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
 
 def checkConnections(api, dataset): #dataset is the hashtag
