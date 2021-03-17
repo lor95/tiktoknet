@@ -11,7 +11,7 @@ def ETL(dataset):
     'music_authorName','stats_shareCount','stats_commentCount','stats_playCount',
     'duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount',
     'authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo',
-    'likedBy_id','likedBy_secUid','likedBy_nickname']] # extract columns
+    'likedBy_id','likedBy_secUid','likedBy_nickname','idcopy']] # extract columns
     df['originalVideo'] = df['originalVideo'].fillna(0)
     try:
         df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
@@ -21,37 +21,37 @@ def ETL(dataset):
 
 def checkConnections(api, dataset): #dataset is the hashtag
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
-    df['likedBy_id'] = ""
-    df['likedBy_secUid'] = ""
-    df['likedBy_nickname'] = ""
-    df['idcopy'] = ""
+    df['likedBy_id'] = "NaN"
+    df['likedBy_secUid'] = "NaN"
+    df['likedBy_nickname'] = "NaN"
+    df['idcopy'] = "NaN"
     #print(df)
     if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
         df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";")
     else:
         df1 = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";") # default
-    for index, row in df1.iterrows():
+    for index, row in df1.iterrows(): # users with open liked list
         tiktoks = api.userLiked(row['author_id'],row['author_secUid'],count=10000)
         if(len(tiktoks) > 0):
             df2 = utils.datasetHelper(tiktoks)
             #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
-            for index, row in df2.iterrows():
-                if row["desc"].lower().find(dataset.lower()) != -1: # check if row contains tiktoks
-                    df = df.append(row, ignore_index=True)
-                if row['id'] in list(df["id"]):
-                    if not df.loc[df['id'] == row["id"], 'likedBy_id'].empty: # if cell is empty
-                        df.loc[df['id'] == row["id"], 'likedBy_id'] = row["author_id"]
-                        df.loc[df['id'] == row["id"], 'likedBy_secUid'] = row["author_secUid"]
-                        df.loc[df['id'] == row["id"], 'likedBy_nickname'] = row["author_nickname"]
+            for index, row1 in df2.iterrows(): # liked tiktoks
+                if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"])): 
+                    df = df.append(row1, ignore_index=True)
+                if row1["id"] in list(df["id"]):
+                    if pd.isnull(df.loc[df['id'] == row1["id"], 'likedBy_id'].iloc[:].values): # if cell is empty
+                        df.loc[df['id'] == row1["id"], 'likedBy_id'] = row["author_id"]
+                        df.loc[df['id'] == row1["id"], 'likedBy_secUid'] = row["author_secUid"]
+                        df.loc[df['id'] == row1["id"], 'likedBy_nickname'] = row["author_nickname"]
                     else:
-                        df_temp = df.loc[df['id'] == row["id"]] # to test
+                        df_temp = df.loc[df['id'] == row1["id"]] # TESTARE (CASO IN CUI UN VIDEO è PIACIUTO A PIù DI UN UTENTE)
                         df_temp['idcopy'] = df_temp['id']
                         df_temp['id'] = df_temp['id'] + "_" + str(uuid.uuid4().hex)
                         df_temp["likedBy_id"] = row["author_id"]
                         df_temp["likedBy_secUid"] = row["author_secUid"]
                         df_temp["likedBy_nickname"] = row["author_nickname"]
                         df = df.append([df_temp], ignore_index=True)
-    df.drop_duplicates(keep='first',inplace=True)
+    #df.drop_duplicates(keep='first',inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False)
     #return True
 
@@ -80,7 +80,7 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
         if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
             tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
             df1 = df1.append(tempDict, ignore_index=True)
-        #if df1.shape[0] == 4:
+        #if df1.shape[0] == 15: # subset of users
             #break           
     df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
