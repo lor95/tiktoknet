@@ -77,10 +77,13 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
     for index, row in df.iterrows():
         print("Parsing: "+str(counter)+"/"+str(size))
         counter += 1
-        if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
-            tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
-            df1 = df1.append(tempDict, ignore_index=True)
-        #if df1.shape[0] == 15: # subset of users
-            #break           
+        try:
+            if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
+                tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
+                df1 = df1.append(tempDict, ignore_index=True)
+            #if df1.shape[0] == 15: # subset of users
+                #break         
+        except:
+            continue  
     df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
