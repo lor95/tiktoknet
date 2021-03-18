@@ -1,6 +1,14 @@
 from TikTokApi import TikTokApi
 import pandas as pd
 
+# Print iterations progress
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    #print("\033[A                             \033[A")
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+
 def datasetHelper(tiktoks):
     rows = []
     for tiktok in tiktoks:

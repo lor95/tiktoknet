@@ -3,6 +3,7 @@ import pandas as pd
 import lib.utils as utils
 import os
 import uuid
+import logging
 
 def ETL(dataset):
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
@@ -20,6 +21,8 @@ def ETL(dataset):
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
 
 def checkConnections(api, dataset): #dataset is the hashtag
+    logger = logging.getLogger()
+    print("Generating connection's dataset. This operation may take a while...\n")
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
     df['likedBy_id'] = ""
     df['likedBy_secUid'] = ""
@@ -29,13 +32,16 @@ def checkConnections(api, dataset): #dataset is the hashtag
     if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
         df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";")
     else:
-        df1 = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";") # default
+        df1 = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";") # default    
+    logger.disabled = True
+    utils.printProgressBar(0, df1.shape[0], prefix = ' Parsing:', length = 40)
     for index, row in df1.iterrows(): # users with open liked list
         tiktoks = api.userLiked(row['author_id'],row['author_secUid'],count=10000)
+        utils.printProgressBar(index+1, df1.shape[0], prefix = ' Parsing:', length = 40)
         if(len(tiktoks) > 0):
             df2 = utils.datasetHelper(tiktoks)
             #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
-            for index, row1 in df2.iterrows(): # liked tiktoks
+            for index1, row1 in df2.iterrows(): # liked tiktoks
                 if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"].astype("string"))): 
                     df = df.append(row1, ignore_index=True)
                 if row1["id"] in list(df["id"].astype("string")):
@@ -51,6 +57,8 @@ def checkConnections(api, dataset): #dataset is the hashtag
                         df_temp["likedBy_secUid"] = row["author_secUid"]
                         df_temp["likedBy_nickname"] = row["author_nickname"]
                         df = df.append([df_temp], ignore_index=True)
+    logger.disabled = False
+    print("\n\nSaving data...")
     df.drop_duplicates(keep='first',inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False)
     #return True
@@ -70,10 +78,12 @@ def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
     df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
 
 def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
+    logger = logging.getLogger()
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
     counter = 1
     size = df.shape[0]
     df1 = pd.DataFrame({'author_id': [], 'author_secUid': [], 'author_nickname': []}, dtype="string")
+    logger.disabled = True
     for index, row in df.iterrows():
         print("Parsing: "+str(counter)+"/"+str(size))
         counter += 1
@@ -84,6 +94,7 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
             #if df1.shape[0] == 15: # subset of users
                 #break         
         except:
-            continue  
+            continue 
+    logger.disabled = False
     df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
