@@ -21,10 +21,10 @@ def ETL(dataset):
 
 def checkConnections(api, dataset): #dataset is the hashtag
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
-    df['likedBy_id'] = "NaN"
-    df['likedBy_secUid'] = "NaN"
-    df['likedBy_nickname'] = "NaN"
-    df['idcopy'] = "NaN"
+    df['likedBy_id'] = ""
+    df['likedBy_secUid'] = ""
+    df['likedBy_nickname'] = ""
+    df['idcopy'] = ""
     #print(df)
     if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
         df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";")
@@ -36,22 +36,22 @@ def checkConnections(api, dataset): #dataset is the hashtag
             df2 = utils.datasetHelper(tiktoks)
             #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
             for index, row1 in df2.iterrows(): # liked tiktoks
-                if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"])): 
+                if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"].astype("string"))): 
                     df = df.append(row1, ignore_index=True)
-                if row1["id"] in list(df["id"]):
-                    if pd.isnull(df.loc[df['id'] == row1["id"], 'likedBy_id'].iloc[:].values): # if cell is empty
-                        df.loc[df['id'] == row1["id"], 'likedBy_id'] = row["author_id"]
-                        df.loc[df['id'] == row1["id"], 'likedBy_secUid'] = row["author_secUid"]
-                        df.loc[df['id'] == row1["id"], 'likedBy_nickname'] = row["author_nickname"]
+                if row1["id"] in list(df["id"].astype("string")):
+                    if df.loc[df['id'].astype("string") == row1["id"], 'likedBy_id'].iloc[:].values[0] == '': # if cell is empty
+                        df.loc[df['id'].astype("string") == row1["id"], 'likedBy_id'] = row["author_id"]
+                        df.loc[df['id'].astype("string") == row1["id"], 'likedBy_secUid'] = row["author_secUid"]
+                        df.loc[df['id'].astype("string") == row1["id"], 'likedBy_nickname'] = row["author_nickname"]
                     else:
-                        df_temp = df.loc[df['id'] == row1["id"]] # TESTARE (CASO IN CUI UN VIDEO è PIACIUTO A PIù DI UN UTENTE)
+                        df_temp = df.loc[df['id'].astype("string") == row1["id"]] # TESTARE (CASO IN CUI UN VIDEO è PIACIUTO A PIù DI UN UTENTE)
                         df_temp['idcopy'] = df_temp['id']
                         df_temp['id'] = df_temp['id'] + "_" + str(uuid.uuid4().hex)
                         df_temp["likedBy_id"] = row["author_id"]
                         df_temp["likedBy_secUid"] = row["author_secUid"]
                         df_temp["likedBy_nickname"] = row["author_nickname"]
                         df = df.append([df_temp], ignore_index=True)
-    #df.drop_duplicates(keep='first',inplace=True)
+    df.drop_duplicates(keep='first',inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False)
     #return True
 
