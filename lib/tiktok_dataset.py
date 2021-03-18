@@ -6,7 +6,7 @@ import uuid
 import logging
 
 def ETL(dataset):
-    df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";", dtype="string")
+    df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
     df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId',
     'author_nickname','author_verified','author_secUid','music_id','music_title',
     'music_authorName','stats_shareCount','stats_commentCount','stats_playCount',
@@ -18,7 +18,7 @@ def ETL(dataset):
         df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
     except:
         print("createTime column already converted")
-    #df['idcopy'] = df['idcopy'].astype("string")
+    df['idcopy'] = df['idcopy'].astype("string")
     df.loc[df['idcopy'] != '','id'] = df['idcopy']
     df.drop(['idcopy'], axis=1, inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
@@ -28,6 +28,7 @@ def checkConnections(api, dataset): #dataset is the hashtag
     pd.options.mode.chained_assignment = None
     print("Generating connection's dataset. This operation may take a while...\n")
     df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";", dtype="string")
+    df['id'] = df['id'].astype("string")
     df['likedBy_id'] = ""
     df['likedBy_secUid'] = ""
     df['likedBy_nickname'] = ""
