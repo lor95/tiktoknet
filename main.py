@@ -4,10 +4,9 @@ import argparse
 import os
 import sys
 
-print(sys.argv)
 parser = argparse.ArgumentParser(description = 'TikTok dataset generator.')
 parser.add_argument('-rec', action = 'store', type = int,
-                    help = 'Recovery mode: default 0 (False)',
+                    help = 'Recovery mode',
                     metavar = '<recovery_mode>',
                     default = 0)
 args = parser.parse_args()
