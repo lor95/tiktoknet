@@ -22,13 +22,14 @@ api = TikTokApi.get_instance(use_test_endpoints=True)
 
 sys.argv = sys.argv[:1] 
 
-if args.rec < 0:
+if args.rec == 0:
     td.buildDatasetByHashtag(api, challenges["itookanap"]["name"], challenges["itookanap"]["url"], 10000)
 try:
     td.pubAuthList(api, challenges["itookanap"]["name"], args.rec)
 except Exception as ex:
     sys.argv.append("-rec")
     sys.argv.append(str(ex.args[0]))
-    os.execv(sys.executable, [sys.executable] + sys.argv)
+    os.execv(sys.executable, [sys.executable] + sys.argv) # recovery mode
+# recovery mode anche sotto??
 td.checkConnections(api, challenges["itookanap"]["name"])
 td.ETL(challenges["itookanap"]["name"])

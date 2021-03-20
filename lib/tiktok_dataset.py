@@ -106,7 +106,7 @@ def pubAuthList(api, dataset, recovery): # returns dataset of users with public 
         logger.disabled = False
         df1.drop_duplicates(keep='first',inplace=True)
         df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
-        raise Exception(counter)    
+        raise Exception(counter)    # start recovery mode
     logger.disabled = False
     df1.drop_duplicates(keep='first',inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
