@@ -119,7 +119,7 @@ def pubAuthList(api, dataset, rows=0): # returns dataset of users with public li
             counter += 1
             if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
                 tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_uniqueId': row['author_uniqueId']}
-                if row['author_uniqueId'] not in df1['author_uniqueId'].iloc[:].values[0]:
+                if row['author_uniqueId'] not in df1['author_uniqueId'].iloc[:].values:
                     df1 = df1.append(tempDict, ignore_index=True)
                     if rows != 0:
                         count += 1

@@ -18,7 +18,7 @@ challenge = challenge.getChallenge(args.c)
 
 api = TikTokApi.get_instance(use_test_endpoints=True)
 
-td.buildDatasetByHashtag(api, challenge["name"], challenge["url"], 10000)
+#td.buildDatasetByHashtag(api, challenge["name"], challenge["url"], 10000)
 td.pubAuthList(api, challenge["name"])
 rows = td.checkConnections(api, challenge["name"])
 while rows != 0 and args.l: # conditional loop
