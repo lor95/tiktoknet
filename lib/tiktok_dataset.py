@@ -13,66 +13,76 @@ def ETL(dataset):
     'music_authorName','stats_shareCount','stats_commentCount','stats_playCount',
     'duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount',
     'authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo',
-    'likedBy_id','likedBy_secUid','likedBy_nickname','idcopy']] # extract columns
+    'likedBy_id','likedBy_secUid','likedBy_uniqueId','idcopy']] # extract columns
+    df['id'] = df['id'].astype("string")
     df['originalVideo'] = df['originalVideo'].fillna(0)
     try:
         df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
     except:
         print("createTime column already converted")
-    df['idcopy'] = df['idcopy'].astype("string")
-    df.loc[df['idcopy'] != '','id'] = df['idcopy']
+    df.loc[df['idcopy'] != '-','id'] = df['idcopy']
     df.drop(['idcopy'], axis=1, inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
 
-def checkConnections(api, dataset): #dataset is the hashtag
+def checkConnections(api, dataset, count=0): #dataset is the hashtag
     logger = logging.getLogger()
     pd.options.mode.chained_assignment = None
     print("Generating connection's dataset. This operation may take a while...\n")
-    df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";", dtype="string")
-    df['id'] = df['id'].astype("string")
-    df['likedBy_id'] = ""
-    df['likedBy_secUid'] = ""
-    df['likedBy_nickname'] = ""
-    df['idcopy'] = ""
-    #print(df)
-    if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
-        df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";")
+    if count == 0:
+        df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
+        df['id'] = df['id'].astype("string")
+        df['likedBy_id'] = "-"
+        df['likedBy_secUid'] = "-"
+        df['likedBy_uniqueId'] = "-"
+        df['idcopy'] = "-"
     else:
-        df1 = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";") # default    
+        df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";", dtype="string")
+    rowsAdded = 0
+    if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
+        df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";", dtype="string")
+        if count != 0:
+            df1 = df1.tail(count)
+    else:
+        df1 = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";", dtype="string") # default 
     logger.disabled = True
     utils.printProgressBar(0, df1.shape[0], prefix = ' Parsing:', length = 40)
     for index, row in df1.iterrows(): # users with open liked list
         try:
             tiktoks = api.userLiked(row['author_id'],row['author_secUid'],count=10000)
-            utils.printProgressBar(index+1, df1.shape[0], prefix = ' Parsing:', length = 40)
             if(len(tiktoks) > 0):
                 df2 = utils.datasetHelper(tiktoks)
                 #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
                 for index1, row1 in df2.iterrows(): # liked tiktoks
-                    if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"])): 
+                    if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"])):
+                        row1['likedBy_id'] = "-"
+                        row1['likedBy_secUid'] = "-"
+                        row1['likedBy_uniqueId'] = "-"
+                        row1['idcopy'] = "-"
                         df = df.append(row1, ignore_index=True)
+                        rowsAdded += 1
                     if row1["id"] in list(df["id"]):
-                        if df.loc[df['id'] == row1["id"], 'likedBy_id'].iloc[:].values[0] == '': # if cell is empty
+                        if df.loc[df['id'] == row1["id"], 'likedBy_id'].iloc[:].values[0] == '-': # if cell equals "-" (empty)
                             df.loc[df['id'] == row1["id"], 'likedBy_id'] = row["author_id"]
                             df.loc[df['id'] == row1["id"], 'likedBy_secUid'] = row["author_secUid"]
-                            df.loc[df['id'] == row1["id"], 'likedBy_nickname'] = row["author_nickname"]
+                            df.loc[df['id'] == row1["id"], 'likedBy_uniqueId'] = row["author_uniqueId"]
                         else:
                             df_temp = df.loc[df['id'] == row1["id"]] # a tiktok is liked by more than a user
                             df_temp['idcopy'] = df_temp['id']
                             df_temp['id'] = df_temp['id'] + "_" + str(uuid.uuid4().hex)
                             df_temp["likedBy_id"] = row["author_id"]
                             df_temp["likedBy_secUid"] = row["author_secUid"]
-                            df_temp["likedBy_nickname"] = row["author_nickname"]
+                            df_temp["likedBy_uniqueId"] = row["author_uniqueId"]
                             df = df.append([df_temp], ignore_index=True)
+                            rowsAdded += 1
+            utils.printProgressBar(index+1, df1.shape[0], prefix = ' Parsing:', length = 40)
         except:
             browser.clean_playwright()
             api.clean_up() # cleans api and restart it
             api = TikTokApi.get_instance(use_test_endpoints=True)
     logger.disabled = False
     print("\n\nSaving data...")
-    df.drop_duplicates(keep='first',inplace=True)
     df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False)
-    #return True
+    return rowsAdded # restituisci il numero di righe aggiunte ad ogni iterazione
 
 def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
     tiktoks = api.byHashtag(hashtag, count=_count, custom_verifyFp="")
@@ -88,20 +98,31 @@ def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
     df.loc[df['id'] == _id, 'originalVideo'] = 1 # search for the original video and flag it
     df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
 
-def pubAuthList(api, dataset): # returns dataset of users with public liked tiktok's list
+def pubAuthList(api, dataset, rows=0): # returns dataset of users with public liked tiktok's list
+    if rows == 0:
+        df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
+    else:
+        df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
+        df = df.tail(rows)
+    if os.path.exists("./dataset/authors/pubLiked_"+dataset+".csv"):
+        df1 = pd.read_csv("./dataset/authors/pubLiked_"+dataset+".csv", sep = ";", dtype="string")
+    else:
+        df1 = pd.DataFrame({'author_id': [], 'author_secUid': [], 'author_uniqueId': []}, dtype="string")
     logger = logging.getLogger()
-    df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
+    count = 0
+    logger.disabled = True
     counter = 1
     size = df.shape[0]
-    df1 = pd.DataFrame({'author_id': [], 'author_secUid': [], 'author_nickname': []}, dtype="string")
-    logger.disabled = True
     for index, row in df.iterrows():
         try:
             print("Parsing: "+str(counter)+"/"+str(size))
             counter += 1
             if len(api.userLiked(row['author_id'],row['author_secUid'],count=1)) > 0:
-                tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_nickname': row['author_nickname']}
-                df1 = df1.append(tempDict, ignore_index=True)
+                tempDict = {'author_id': row['author_id'], 'author_secUid': row['author_secUid'], 'author_uniqueId': row['author_uniqueId']}
+                if row['author_uniqueId'] not in df1['author_uniqueId'].iloc[:].values[0]:
+                    df1 = df1.append(tempDict, ignore_index=True)
+                    if rows != 0:
+                        count += 1
             #if df1.shape[0] == 15: # subset of users
                 #break         
         except:
@@ -110,5 +131,6 @@ def pubAuthList(api, dataset): # returns dataset of users with public liked tikt
             api.clean_up() # cleans api and restart it
             api = TikTokApi.get_instance(use_test_endpoints=True)
     logger.disabled = False
-    df1.drop_duplicates(keep='first',inplace=True)
+    #df1.drop_duplicates(subset='author_uniqueId', keep='first', inplace=True)
     df1.to_csv("dataset/authors/pubLiked_"+dataset+".csv", sep=";", index=False)
+    return count
