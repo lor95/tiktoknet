@@ -10,8 +10,8 @@ def ETL(dataset):
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
     df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId',
     'author_nickname','author_verified','author_secUid','music_id','music_title',
-    'music_authorName','stats_shareCount','stats_commentCount','stats_playCount',
-    'duetInfo_duetFromId','authorStats_followingCount','authorStats_followerCount',
+    'music_authorName','stats_diggCount','stats_shareCount','stats_commentCount','stats_playCount',
+    'duetInfo_duetFromId','authorStats_diggCount','authorStats_followingCount','authorStats_followerCount',
     'authorStats_heartCount','authorStats_videoCount','duetEnabled','originalVideo',
     'likedBy_id','likedBy_secUid','likedBy_uniqueId','idcopy']] # extract columns
     df['id'] = df['id'].astype("string")
@@ -22,7 +22,7 @@ def ETL(dataset):
         print("createTime column already converted")
     df.loc[df['idcopy'] != '-','id'] = df['idcopy']
     df.drop(['idcopy'], axis=1, inplace=True)
-    df.to_csv("dataset/dataset_"+dataset+"_connections.csv", sep=';', index=False) #save filtered dataset
+    df.to_csv("dataset/dataset_"+dataset+"_connections_etl.csv", sep=';', index=False) #save filtered dataset
 
 def checkConnections(api, dataset, count=0): #dataset is the hashtag
     logger = logging.getLogger()
