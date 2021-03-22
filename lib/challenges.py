@@ -12,3 +12,6 @@ challenges = { "itookanap":
 
 def getChallenge(challenge):
     return challenges[challenge.lower()]
+
+def getChallengeList():
+    return ', '.join(list(challenges.keys()))

@@ -5,11 +5,11 @@ import argparse
 
 parser = argparse.ArgumentParser(description = 'TikTok dataset generator.')
 parser.add_argument('-c', action = 'store', type = str,
-                    help = 'Challenge hashtag',
+                    help = 'Challenge hashtag. Available challenges: \n'+challenge.getChallengeList()+'.',
                     metavar = '<challenge>',
                     default = "itookanap")
 parser.add_argument('-l', action = 'store', type = int,
-                    help = 'Check for more tiktoks (keep searching for users with public liked tiktok\'s list)',
+                    help = 'Check for more tiktoks (keep searching for users with public liked tiktok\'s list).',
                     metavar = '<loop>',
                     default = 0)
 args = parser.parse_args()
