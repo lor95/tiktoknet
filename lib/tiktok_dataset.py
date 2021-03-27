@@ -7,6 +7,7 @@ import uuid
 import logging
 
 def ETL(dataset):
+    dataset = dataset.split(",")[0]
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
     df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId',
     'author_nickname','author_verified','author_secUid','music_id','music_title',
@@ -25,6 +26,8 @@ def ETL(dataset):
     df.to_csv("dataset/dataset_"+dataset+"_connections_etl.csv", sep=';', index=False) #save filtered dataset
 
 def checkConnections(api, dataset, count=0): #dataset is the hashtag
+    list_of_tags = dataset.split(",")
+    dataset = list_of_tags[0]
     logger = logging.getLogger()
     pd.options.mode.chained_assignment = None
     print("Generating connection's dataset. This operation may take a while...\n")
@@ -53,7 +56,7 @@ def checkConnections(api, dataset, count=0): #dataset is the hashtag
                 df2 = utils.datasetHelper(tiktoks)
                 #df2.to_csv("./dataset/test_"+str(uuid.uuid4().hex)+".csv",sep=";",index=False)
                 for index1, row1 in df2.iterrows(): # liked tiktoks
-                    if (row1["desc"].lower().find(dataset.lower()) != -1) and (row1["id"] not in list(df["id"])):
+                    if any(row1["desc"].lower().find("#"+elem_.lower()) != -1 for elem_ in list_of_tags) and (row1["id"] not in list(df["id"])):
                         row1['likedBy_id'] = "-"
                         row1['likedBy_secUid'] = "-"
                         row1['likedBy_uniqueId'] = "-"
@@ -85,8 +88,14 @@ def checkConnections(api, dataset, count=0): #dataset is the hashtag
     return rowsAdded # restituisci il numero di righe aggiunte ad ogni iterazione
 
 def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
-    tiktoks = api.byHashtag(hashtag, count=_count, custom_verifyFp="")
-    df = utils.datasetHelper(tiktoks)
+    df = pd.DataFrame()
+    for tag in hashtag.split(","):
+        try:
+            tiktoks = api.byHashtag(tag.lower(), count=_count, custom_verifyFp="")
+            print("Downloaded "+str(len(tiktoks)) + " for '"+tag+"'")
+            df = df.append(utils.datasetHelper(tiktoks))
+        except Exception as ex:
+            print("Api failed downloading data for hashtag: '"+tag+"'\nPlease wait...checking for more tags...")
     _id = ""
     if url_orig:
         tiktok = api.getTikTokByUrl(url_orig)
@@ -96,9 +105,11 @@ def buildDatasetByHashtag(api, hashtag, url_orig, _count=10000):
             df = df.append(utils.datasetHelper(tiktokL), ignore_index = True)
     df['originalVideo'] = 0
     df.loc[df['id'] == _id, 'originalVideo'] = 1 # search for the original video and flag it
-    df.to_csv("dataset/dataset_"+hashtag+".csv", sep=';', index=False)
+    df.drop_duplicates(subset="id", keep="first", inplace=True)
+    df.to_csv("dataset/dataset_"+hashtag.split(",")[0]+".csv", sep=';', index=False)
 
 def pubAuthList(api, dataset, rows=0): # returns dataset of users with public liked tiktok's list
+    dataset = dataset.split(",")[0]
     if rows == 0:
         df = pd.read_csv("./dataset/dataset_"+dataset+".csv", sep=";")
     else:
@@ -123,8 +134,8 @@ def pubAuthList(api, dataset, rows=0): # returns dataset of users with public li
                     df1 = df1.append(tempDict, ignore_index=True)
                     if rows != 0:
                         count += 1
-            #if df1.shape[0] == 15: # subset of users
-                #break         
+            if df1.shape[0] == 2: # subset of users
+                break         
         except:
             print("Recovery mode.")
             browser.clean_playwright()
