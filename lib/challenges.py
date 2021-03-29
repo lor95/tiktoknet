@@ -16,25 +16,42 @@ challenges = { "itookanap":
                 "copinesdancechallenge":
                     {"name":"copinesdancechallenge",
                      "url":"https://www.tiktok.com/@nicolesopogee/video/6906089727640816897"},
-                "eatingchalk":
-                    {"name":"eatingchalkasmr",
-                     "url":""},
-                "saltandicechallenge":
-                    {"name":"saltandicechallenge",
-                     "url":""},
-                "trashbagchallenge":
-                    {"name": "trashbagchallenge",
-                     "url":""},
                 "walkamile":
                     {"name":"walkamile",
                      "url":""},
                "silhouettechallenge":
                     {"name":"silhouettechallenge",
+                     "url":""},
+               "badchallenge":
+                    {"name":"badchallenge",
+                     "url":""},
+               "eatingchallenge":
+                    {"name":"eatingchallenge",
+                     "url":""},
+               "kissyourpetchallenge":
+                    {"name":"kissyourpetchallenge",
+                     "url":"https://www.tiktok.com/@foopydrip/video/6922985431424437510"},
+               "emojichallenge":
+                    {"name":"emojichallenge",
+                     "url":""},
+               "flexibilitychallenge":
+                    {"name":"flexibilitychallenge",
+                     "url":"https://www.tiktok.com/@ayushishukla098/video/6546886448757347328"},
+               "bussitchallenge":
+                    {"name":"bussitchallenge",
+                     "url":""},
+               "dominochallenge":
+                    {"name":"dominochallenge",
+                     "url":"https://www.tiktok.com/@stilestefanbae/video/6905779244845092098"},
+               "popcornkaraoke":
+                    {"name":"popcornkaraoke",
                      "url":""}
                 # insert challenge here
             }
+
 def getChallenge(challenge):
     return challenges[challenge.lower()]
 
 def getChallengeList():
     return ', '.join(list(challenges.keys()))
+
