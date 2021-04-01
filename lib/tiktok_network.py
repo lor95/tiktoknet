@@ -1,5 +1,16 @@
 import pandas as pd
 import networkx as nx
+import numpy as np
+
+def graphStats(graph):
+    print('Number of nodes: '+str(graph.number_of_nodes()))
+    print('Number of edges: '+str(graph.number_of_edges()))
+    print('Mean indegree: '+str(np.mean([x[1] for x in graph.in_degree()])))
+    print('Mean indegree std: '+str(np.std([x[1] for x in graph.in_degree()])))
+    print('Mean outdegree: '+str(np.mean([x[1] for x in graph.out_degree()])))
+    print('Mean outdegree std: '+str(np.std([x[1] for x in graph.out_degree()])))
+    print('Average clustering coefficient: '+str(nx.average_clustering(graph)))
+    print('Density: '+str(nx.density(graph)))
 
 def graphCalculation(dataset, colorCriteria):
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
@@ -14,14 +25,12 @@ def graphCalculation(dataset, colorCriteria):
         labels[int(row["author_id"])] = row["author_uniqueId"]
         nodes.add(int(row["likedBy_id"]))
         labels[int(row["likedBy_id"])] = row["likedBy_uniqueId"]
-        list_to_append=[]
+        edg=[]
         source=int(row['likedBy_id'])
         target=int(row['author_id'])
-        value = 1
-        list_to_append.append(source)
-        list_to_append.append(target)
-        list_to_append.append(value)
-        edges.append(list_to_append)
+        edg.append(source)
+        edg.append(target)
+        edges.append(edg)
     if colorCriteria == 'createTime':
         df['createTime'] = pd.to_datetime(df['createTime']).astype(int) / 10e9
         df['createTime'] = round((df['createTime']-df['createTime'].min())/(df['createTime'].max()-df['createTime'].min()) * 255) # RGB color
@@ -35,9 +44,7 @@ def graphCalculation(dataset, colorCriteria):
             else:
                 colors.append("#ffff57")
     
-    graph = nx.Graph()
+    graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
-    graph.add_weighted_edges_from(edges)
+    graph.add_edges_from(edges)
     return [graph, labels, colors]
-
-graphCalculation("ITookANap","createTime")
