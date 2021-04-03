@@ -2,6 +2,11 @@ import pandas as pd
 import networkx as nx
 import numpy as np
 
+def position_1(radius):
+    x_coord = radius
+    y_coord = radius
+    return (x_coord, y_coord)
+
 def graphStats(graph):
     print('Number of nodes: '+str(graph.number_of_nodes()))
     print('Number of edges: '+str(graph.number_of_edges()))
@@ -13,13 +18,15 @@ def graphStats(graph):
     print('Density: '+str(nx.density(graph)))
 
 def graphCalculation(dataset, colorCriteria):
+    nodes = set()
+    labels = dict()
+    colors = list()
+    edges = list()
+    dmap = dict()
+    pos = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df = df[df["likedBy_uniqueId"]!= "-"]
     df = df[df["likedBy_uniqueId"]!=df["author_uniqueId"]] # remove unconnected nodes
-    nodes = set()
-    labels = {}
-    colors = list()
-    edges = list()
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
         labels[int(row["author_id"])] = row["author_uniqueId"]
@@ -32,19 +39,28 @@ def graphCalculation(dataset, colorCriteria):
         edg.append(target)
         edges.append(edg)
     if colorCriteria == 'createTime':
-        df['createTime'] = pd.to_datetime(df['createTime']).astype(int) / 10e9
+        df['createTime'] = pd.to_datetime(df['createTime']).astype(np.int64) / 10e9
         df['createTime'] = round((df['createTime']-df['createTime'].min())/(df['createTime'].max()-df['createTime'].min()) * 255) # RGB color
         for node in nodes:
+            pos[node] = "" # prepare position dictionary
             if node in list(df['author_id'].astype(int)):
+                val = int(df.loc[df['author_id'].astype(int) == node, 'createTime'].iloc[:].values[0])
                 if df.loc[df['author_id'].astype(int) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
                 else:
-                    val = int(df.loc[df['author_id'].astype(int) == node, 'createTime'].iloc[:].values[0])
                     colors.append('#%02x%02x%02x' % (val, val, val))
             else:
+                val = 256
                 colors.append("#ffff57")
-    
+            try:
+                dmap[val].append(node)
+            except:
+                dmap[val] = [node]
+        dict_k = sorted(list(dmap.keys()))
+        for val in dict_k:
+            for node in dmap[val]:
+                pos[node] = position_1(val + 10) # calculate node position from radius
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
-    return [graph, labels, colors]
+    return [graph, labels, colors, pos]
