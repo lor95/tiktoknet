@@ -1,6 +1,8 @@
 import pandas as pd
 import networkx as nx
 import numpy as np
+from random import randrange
+import math
 
 def position_1(radius):
     x_coord = radius
@@ -43,9 +45,9 @@ def graphCalculation(dataset, colorCriteria):
         df['createTime'] = round((df['createTime']-df['createTime'].min())/(df['createTime'].max()-df['createTime'].min()) * 255) # RGB color
         for node in nodes:
             pos[node] = "" # prepare position dictionary
-            if node in list(df['author_id'].astype(int)):
-                val = int(df.loc[df['author_id'].astype(int) == node, 'createTime'].iloc[:].values[0])
-                if df.loc[df['author_id'].astype(int) == node, 'originalVideo'].iloc[:].values[0] == 1:
+            if node in list(df['author_id'].astype(np.int64)):
+                val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime'].iloc[:].values[0])
+                if df.loc[df['author_id'].astype(np.int64) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
                 else:
                     colors.append('#%02x%02x%02x' % (val, val, val))
@@ -59,8 +61,15 @@ def graphCalculation(dataset, colorCriteria):
         dict_k = sorted(list(dmap.keys()))
         for val in dict_k:
             for node in dmap[val]:
-                pos[node] = position_1(val + 10) # calculate node position from radius
+                radius = val
+                pos[node] = position_1(radius + 10) # calculate node position from radius
+                angolo = randrange(361) 
+                x = radius*(math.cos(angolo))
+                y = radius*(math.sin(angolo))
+                pos[node] = (x,y)
+
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
     return [graph, labels, colors, pos]
+    
