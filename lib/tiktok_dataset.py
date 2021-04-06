@@ -134,8 +134,8 @@ def pubAuthList(api, dataset, rows=0): # returns dataset of users with public li
                     df1 = df1.append(tempDict, ignore_index=True)
                     if rows != 0:
                         count += 1
-            if df1.shape[0] == 2: # subset of users
-                break         
+            #if df1.shape[0] == 2: # subset of users
+                #break         
         except:
             print("Recovery mode.")
             browser.clean_playwright()

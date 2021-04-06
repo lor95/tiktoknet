@@ -5,11 +5,9 @@ from random import randrange
 import math
 
 def position_1(radius):
-    angolo = randrange(361) #calcolo un numero casuale da 0 a 360
-    x_coord = radius*(math.cos(angolo))
-    y_coord = radius*(math.sin(angolo))
-    #x_coord = radius
-    #y_coord = radius
+    angle = randrange(361) #calcolo un numero casuale da 0 a 360
+    x_coord = radius*(math.cos(angle))
+    y_coord = radius*(math.sin(angle))
     return (x_coord, y_coord)
 
 def graphStats(graph):
@@ -64,7 +62,7 @@ def graphCalculation(dataset, colorCriteria):
         dict_k = sorted(list(dmap.keys()))
         for val in dict_k:
             for node in dmap[val]:
-                pos[node] = position_1(val + 10)
+                pos[node] = position_1(val)
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
