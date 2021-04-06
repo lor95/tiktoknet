@@ -19,32 +19,56 @@ challenges = { "itookanap":
                 "walkamile":
                     {"name":"walkamile",
                      "url":""},
-               "silhouettechallenge":
+                "silhouettechallenge":
                     {"name":"silhouettechallenge",
                      "url":""},
-               "badchallenge":
+                "badchallenge":
                     {"name":"badchallenge",
                      "url":""},
-               "eatingchallenge":
+                "eatingchallenge":
                     {"name":"eatingchallenge",
                      "url":""},
-               "kissyourpetchallenge":
+                "kissyourpetchallenge":
                     {"name":"kissyourpetchallenge",
                      "url":"https://www.tiktok.com/@foopydrip/video/6922985431424437510"},
-               "emojichallenge":
+                "emojichallenge":
                     {"name":"emojichallenge",
                      "url":""},
-               "flexibilitychallenge":
+                "flexibilitychallenge":
                     {"name":"flexibilitychallenge",
                      "url":"https://www.tiktok.com/@ayushishukla098/video/6546886448757347328"},
-               "bussitchallenge":
+                "bussitchallenge":
                     {"name":"bussitchallenge",
                      "url":""},
-               "dominochallenge":
+                "dominochallenge":
                     {"name":"dominochallenge",
                      "url":"https://www.tiktok.com/@stilestefanbae/video/6905779244845092098"},
-               "popcornkaraoke":
+                "popcornkaraoke":
                     {"name":"popcornkaraoke",
+                     "url":""},
+                "boredinthehouse":
+                    {"name":"boredinthehouse",
+                     "url":"https://www.tiktok.com/@curtisroach/video/6800471860761971974"},
+                "beautifulpeople":
+                    {"name":"beautifulpeople",
+                     "url":"https://www.tiktok.com/@daniloantonelli/video/6716795433986952454"},
+                "savagechallenge":
+                    {"name":"savagechallenge",
+                     "url":""},
+                "savagelove":
+                    {"name":"savagelove",
+                     "url":""},
+                "plankchallenge":
+                    {"name":"plankchallenge",
+                     "url":""},
+                "levelupchallenge":
+                    {"name":"levelupchallenge",
+                     "url":"https://www.tiktok.com/@jelinuh/video/6580863052575411461"},
+                "makemomsmile":
+                    {"name":"MakeMomSmile",
+                    "url":""},
+                "makeupchallenge":
+                    {"name":"makeupchallenge",
                      "url":""}
                 # insert challenge here
             }
@@ -53,5 +77,6 @@ def getChallenge(challenge):
     return challenges[challenge.lower()]
 
 def getChallengeList():
-    return ', '.join(list(challenges.keys()))
+    return ', '.join(list(challenges.keys())) 
 
+ 
