@@ -69,6 +69,27 @@ challenges = { "itookanap":
                     "url":""},
                 "makeupchallenge":
                     {"name":"makeupchallenge",
+                     "url":""},
+                "thatjustmybabydoggy":
+                    {"name":"thatjustmybabydoggy",
+                     "url": "https://www.tiktok.com/@stemjmu/video/6826015024713059590"},
+                "cerealchallenge": 
+                    {"name":"cerealchallenge",
+                     "url":""},
+                "facefilterchallenge":
+                    {"name":"facefilterchallenge",
+                     "url":""},
+                "obstaclechallenge":
+                    {"name":"obstaclechallenge",
+                     "url":""},
+                "ohnono":
+                    {"name":"ohnono",
+                     "url":""},
+                "colpiditesta":
+                    {"name":"colpiditesta",
+                     "url":""},
+                "achiassomiglio":
+                    {"name":"achiassomiglio",
                      "url":""}
                 # insert challenge here
             }
