@@ -4,27 +4,33 @@ import numpy as np
 from random import randrange
 import math
 
+def ETL2(dataFrame):
+    dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!= "-"]
+    dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!=dataFrame["author_uniqueId"]] # remove unconnected nodes
+    return dataFrame
+
 def position_1(radius):
     angle = randrange(361) #calcolo un numero casuale da 0 a 360
     x_coord = radius*(math.cos(angle))
     y_coord = radius*(math.sin(angle))
     return (x_coord, y_coord)
 
-def graphStats(graph):
+def graphStats(graph, _print=True):
     stats = {"nnodes":graph.number_of_nodes(),
              "nedges":graph.number_of_edges(),
              "mindegree":np.mean([x[1] for x in graph.in_degree()]),
              "moutdegree":np.mean([x[1] for x in graph.out_degree()]),
              "avgclust":nx.average_clustering(graph),
              "density":nx.density(graph)}
-    print('Number of nodes: '+str(stats["nnodes"]))
-    print('Number of edges: '+str(stats["nedges"]))
-    print('Mean indegree: '+str(stats["mindegree"]))
-    print('Mean indegree std: '+str(np.std([x[1] for x in graph.in_degree()])))
-    print('Mean outdegree: '+str(stats["moutdegree"]))
-    print('Mean outdegree std: '+str(np.std([x[1] for x in graph.out_degree()])))
-    print('Average clustering coefficient: '+str(stats["avgclust"]))
-    print('Density: '+str(stats["density"]))
+    if _print:
+        print('Number of nodes: '+str(stats["nnodes"]))
+        print('Number of edges: '+str(stats["nedges"]))
+        print('Mean indegree: '+str(stats["mindegree"]))
+        print('Mean indegree std: '+str(np.std([x[1] for x in graph.in_degree()])))
+        print('Mean outdegree: '+str(stats["moutdegree"]))
+        print('Mean outdegree std: '+str(np.std([x[1] for x in graph.out_degree()])))
+        print('Average clustering coefficient: '+str(stats["avgclust"]))
+        print('Density: '+str(stats["density"]))
     return stats
 
 def graphCalculation(dataset, colorCriteria = "createTime"):
@@ -36,8 +42,7 @@ def graphCalculation(dataset, colorCriteria = "createTime"):
     pos = dict()
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
-    df = df[df["likedBy_uniqueId"]!= "-"]
-    df = df[df["likedBy_uniqueId"]!=df["author_uniqueId"]] # remove unconnected nodes
+    df = ETL2(df)
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
         labels[int(row["author_id"])] = row["author_uniqueId"]
@@ -55,14 +60,19 @@ def graphCalculation(dataset, colorCriteria = "createTime"):
         for node in nodes:
             pos[node] = "" # prepare position dictionary
             if node in list(df['author_id'].astype(np.int64)):
-                nodestats[node] = {"createTime": df.loc[df['author_id'].astype(np.int64) == node, 'createTime'].iloc[:].values[0]}
+                nodestats[node] = {"createTime":df.loc[df['author_id'].astype(np.int64) == node, 'createTime'].iloc[:].values[0],
+                                   "music_id":str(df.loc[df['author_id'].astype(np.int64) == node, 'music_id'].iloc[:].values[0]),
+                                   "video_duration": df.loc[df['author_id'].astype(np.int64) == node, 'video_duration'].iloc[:].values[0],
+                                   "stats_diggCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_diggCount'].iloc[:].values[0],
+                                   "stats_shareCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_shareCount'].iloc[:].values[0],
+                                   "stats_commentCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_commentCount'].iloc[:].values[0],
+                                   "stats_playCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_playCount'].iloc[:].values[0]}
                 val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime_norm'].iloc[:].values[0])
                 if df.loc[df['author_id'].astype(np.int64) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
                 else:
                     colors.append('#%02x%02x%02x' % (val, val, val))
             else:
-                nodestats[node] = {"createTime": 0}
                 val = 256
                 colors.append("#ffff57")
             try:

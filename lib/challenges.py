@@ -92,13 +92,13 @@ challenges = { "itookanap":
                     {"name":"achiassomiglio",
                      "url":""},
                 "bugsbunny":
-                    {"name":"bugsbunnychallenge, bugsbunny",
+                    {"name":"bugsbunnychallenge,bugsbunny,bugsbunnychallange",
                     "url":""},
                 "dontbreathe":
-                    {"name":"dontbreathe, dontbreathechallenge, dontbreath, dontbreathchallenge",
+                    {"name":"dontbreathe,dontbreathechallenge,dontbreath,dontbreathchallenge",
                     "url":""},
                 "fireworks":
-                    {"name":"firewroks, fireworks",
+                    {"name":"firewroks,fireworks",
                     "url":""}
                 # insert challenge here
             }
