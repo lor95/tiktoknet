@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import lib.tiktok_network as ntx
 
 plt.figure(figsize=(15,15))
-graph, labels, colors, pos = ntx.graphCalculation("emojichallenge",colorCriteria="createTime")
+graph, labels, colors, pos, _ = ntx.graphCalculation("bussitchallenge",colorCriteria="createTime")
 ntx.graphStats(graph)
 nx.draw_networkx_nodes(graph,pos,node_color=colors,node_size=60)     
 nx.draw_networkx_labels(graph, pos, labels,font_size=5)

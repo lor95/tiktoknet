@@ -6,7 +6,7 @@ import os
 import uuid
 import logging
 
-def ETL(dataset):
+def ETL(dataset, dateConv = True):
     dataset = dataset.split(",")[0]
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections.csv", sep=";")
     df = df[['id', 'createTime','video_id','video_duration','author_id','author_uniqueId',
@@ -18,7 +18,8 @@ def ETL(dataset):
     df['id'] = df['id'].astype("string")
     df['originalVideo'] = df['originalVideo'].fillna(0)
     try:
-        df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
+        if dateConv:
+            df['createTime'] = pd.to_datetime(df['createTime']*1000, unit='ms') # convert to datetime
     except:
         print("createTime column already converted")
     df.loc[df['idcopy'] != '-','id'] = df['idcopy']

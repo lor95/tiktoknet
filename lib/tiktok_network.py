@@ -11,22 +11,30 @@ def position_1(radius):
     return (x_coord, y_coord)
 
 def graphStats(graph):
-    print('Number of nodes: '+str(graph.number_of_nodes()))
-    print('Number of edges: '+str(graph.number_of_edges()))
-    print('Mean indegree: '+str(np.mean([x[1] for x in graph.in_degree()])))
+    stats = {"nnodes":graph.number_of_nodes(),
+             "nedges":graph.number_of_edges(),
+             "mindegree":np.mean([x[1] for x in graph.in_degree()]),
+             "moutdegree":np.mean([x[1] for x in graph.out_degree()]),
+             "avgclust":nx.average_clustering(graph),
+             "density":nx.density(graph)}
+    print('Number of nodes: '+str(stats["nnodes"]))
+    print('Number of edges: '+str(stats["nedges"]))
+    print('Mean indegree: '+str(stats["mindegree"]))
     print('Mean indegree std: '+str(np.std([x[1] for x in graph.in_degree()])))
-    print('Mean outdegree: '+str(np.mean([x[1] for x in graph.out_degree()])))
+    print('Mean outdegree: '+str(stats["moutdegree"]))
     print('Mean outdegree std: '+str(np.std([x[1] for x in graph.out_degree()])))
-    print('Average clustering coefficient: '+str(nx.average_clustering(graph)))
-    print('Density: '+str(nx.density(graph)))
+    print('Average clustering coefficient: '+str(stats["avgclust"]))
+    print('Density: '+str(stats["density"]))
+    return stats
 
-def graphCalculation(dataset, colorCriteria):
+def graphCalculation(dataset, colorCriteria = "createTime"):
     nodes = set()
     labels = dict()
     colors = list()
     edges = list()
     dmap = dict()
     pos = dict()
+    nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df = df[df["likedBy_uniqueId"]!= "-"]
     df = df[df["likedBy_uniqueId"]!=df["author_uniqueId"]] # remove unconnected nodes
@@ -42,17 +50,19 @@ def graphCalculation(dataset, colorCriteria):
         edg.append(target)
         edges.append(edg)
     if colorCriteria == 'createTime':
-        df['createTime'] = pd.to_datetime(df['createTime']).astype(np.int64) / 10e9
-        df['createTime'] = round((df['createTime']-df['createTime'].min())/(df['createTime'].max()-df['createTime'].min()) * 255) # RGB color
+        df['createTime_norm'] = pd.to_datetime(df['createTime']).astype(np.int64) / 10e9
+        df['createTime_norm'] = round((df['createTime_norm']-df['createTime_norm'].min())/(df['createTime_norm'].max()-df['createTime_norm'].min()) * 255) # RGB color
         for node in nodes:
             pos[node] = "" # prepare position dictionary
             if node in list(df['author_id'].astype(np.int64)):
-                val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime'].iloc[:].values[0])
+                nodestats[node] = {"createTime": df.loc[df['author_id'].astype(np.int64) == node, 'createTime'].iloc[:].values[0]}
+                val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime_norm'].iloc[:].values[0])
                 if df.loc[df['author_id'].astype(np.int64) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
                 else:
                     colors.append('#%02x%02x%02x' % (val, val, val))
             else:
+                nodestats[node] = {"createTime": 0}
                 val = 256
                 colors.append("#ffff57")
             try:
@@ -66,4 +76,4 @@ def graphCalculation(dataset, colorCriteria):
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
-    return [graph, labels, colors, pos]
+    return [graph, labels, colors, pos, nodestats]
