@@ -25,6 +25,7 @@ def reset_stats():
             "moutdegree":[],
             "avgclust":[],
             "density":[],
+            "lifespan":[],
             "5_lifespan":[],
             "25_lifespan":[],
             "50_lifespan":[],
@@ -46,6 +47,7 @@ def print_results(arr, _type=False):
     print("Mean indegree: " + str(np.mean(arr["mindegree"])) + " (std: " + str(np.std(arr["mindegree"])) + ")")
     print("Mean outdegree: " + str(np.mean(arr["moutdegree"])) + " (std: " + str(np.std(arr["moutdegree"])) + ")")
     print("Mean clustering coefficient: " + str(np.mean(arr["avgclust"])) + " (std: " + str(np.std(arr["avgclust"])) + ")")
+    print("Mean lifespan (days): " + str(np.mean(arr["lifespan"])) + " (std: " + str(np.std(arr["lifespan"])) + ")")
     print("Mean 5percent lifespan number of nodes: " + str(np.mean(arr["5_lifespan"])) + " (std: " + str(np.std(arr["5_lifespan"])) + ")")
     print("Mean 25percent lifespan number of nodes: " + str(np.mean(arr["25_lifespan"])) + " (std: " + str(np.std(arr["25_lifespan"])) + ")")
     print("Mean 50percent lifespan number of nodes: " + str(np.mean(arr["50_lifespan"])) + " (std: " + str(np.std(arr["50_lifespan"])) + ")")
@@ -76,6 +78,7 @@ for elem in ALL_CHALLENGES:
         STATS["moutdegree"].append(gen_stats["moutdegree"])
         STATS["avgclust"].append(gen_stats["avgclust"])
         STATS["density"].append(gen_stats["density"])
+        STATS["lifespan"].append(timedelta.days)
         STATS["5_lifespan"].append(df.loc[df["createTime"] <= (df["createTime"].min() + (timedelta*5/100))].shape[0])
         STATS["25_lifespan"].append(df.loc[df["createTime"] <= (df["createTime"].min() + (timedelta*25/100))].shape[0])
         STATS["50_lifespan"].append(df.loc[df["createTime"] <= (df["createTime"].min() + (timedelta*50/100))].shape[0])
