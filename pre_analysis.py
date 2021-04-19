@@ -25,6 +25,10 @@ def reset_stats():
             "moutdegree":[],
             "avgclust":[],
             "density":[],
+            "5_lifespan":[],
+            "25_lifespan":[],
+            "50_lifespan":[],
+            "75_lifespan":[],
             "video_duration":[],
             "stats_shareCount":[],
             "stats_commentCount":[],
@@ -42,6 +46,10 @@ def print_results(arr, _type=False):
     print("Mean indegree: " + str(np.mean(arr["mindegree"])) + " (std: " + str(np.std(arr["mindegree"])) + ")")
     print("Mean outdegree: " + str(np.mean(arr["moutdegree"])) + " (std: " + str(np.std(arr["moutdegree"])) + ")")
     print("Mean clustering coefficient: " + str(np.mean(arr["avgclust"])) + " (std: " + str(np.std(arr["avgclust"])) + ")")
+    print("Mean 5percent lifespan number of nodes: " + str(np.mean(arr["5_lifespan"])) + " (std: " + str(np.std(arr["5_lifespan"])) + ")")
+    print("Mean 25percent lifespan number of nodes: " + str(np.mean(arr["25_lifespan"])) + " (std: " + str(np.std(arr["25_lifespan"])) + ")")
+    print("Mean 50percent lifespan number of nodes: " + str(np.mean(arr["50_lifespan"])) + " (std: " + str(np.std(arr["50_lifespan"])) + ")")
+    print("Mean 75percent lifespan number of nodes: " + str(np.mean(arr["75_lifespan"])) + " (std: " + str(np.std(arr["75_lifespan"])) + ")")
     print("Mean density: " + str(np.mean(arr["density"])) + " (std: " + str(np.std(arr["density"])) + ")")
     print("Mean video duration: " + str(np.mean(arr["video_duration"])) + " (std: " + str(np.std(arr["video_duration"])) + ")")
     print("Mean shares count: " + str(np.mean(arr["stats_shareCount"])) + " (std: " + str(np.std(arr["stats_shareCount"])) + ")")
@@ -60,12 +68,18 @@ for elem in ALL_CHALLENGES:
         gen_stats = nx.graphStats(graph, _print=False)
         for node in nodestats:
             df = df.append(nodestats[node], ignore_index=True)
+        df["createTime"] = pd.to_datetime(df["createTime"]) # convert to datetime
+        timedelta = df["createTime"].max() - df["createTime"].min()
         STATS["nnodes"].append(gen_stats["nnodes"])
         STATS["nedges"].append(gen_stats["nedges"])
         STATS["mindegree"].append(gen_stats["mindegree"])
         STATS["moutdegree"].append(gen_stats["moutdegree"])
         STATS["avgclust"].append(gen_stats["avgclust"])
         STATS["density"].append(gen_stats["density"])
+        STATS["5_lifespan"].append(df.loc[df["createTime"] <= df["createTime"].min() + (timedelta)*5/100].shape[0])
+        STATS["25_lifespan"].append(df.loc[df["createTime"] <= df["createTime"].min() + (timedelta)*25/100].shape[0])
+        STATS["50_lifespan"].append(df.loc[df["createTime"] <= df["createTime"].min() + (timedelta)*50/100].shape[0])
+        STATS["75_lifespan"].append(df.loc[df["createTime"] <= df["createTime"].min() + (timedelta)*75/100].shape[0])
         STATS["video_duration"].append(df["video_duration"].mean())
         STATS["stats_shareCount"].append(df["stats_shareCount"].mean())
         STATS["stats_diggCount"].append(df["stats_diggCount"].mean())
