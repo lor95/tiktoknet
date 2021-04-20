@@ -101,25 +101,25 @@ challenges = { "itookanap":
                     {"name":"firewroks,fireworks",
                     "url":""},
                 "drinkchallenge":
-                    {"name":"drinkchallenge, drinkingchallenge, tiktokdrinkchallenge",
+                    {"name":"drinkchallenge,drinkingchallenge,tiktokdrinkchallenge",
                     "url":""},
                 "nakedchallenge":
-                    {"name":"nakedchallenge, nakedtiktok, alwaysnaked, fullynaked, nakedchallange, walkinnaked, nakedchalleng, thenakedchallenge, halfnaked",
+                    {"name":"nakedchallenge,nakedtiktok,alwaysnaked,fullynaked,nakedchallange,walkinnaked,nakedchalleng,thenakedchallenge,halfnaked",
                     "url":""},
                 "burnhair":
-                    {"name":"burnhair, hairburn, burnyourhair, burnmyhair, hairburnchallenge, burnhairstupid",
+                    {"name":"burnhair,hairburn,burnyourhair,burnmyhair,hairburnchallenge,burnhairstupid",
                     "url":""},
                 "eatingchalk":
-                    {"name":"eatingchalk, eatingchalkasmr, eatchalk, wetchalkeating, asmrchalkeating, chalkeatingchallenge, chalkeatinglovers, loveeatingchalk, chalkpencileating",
+                    {"name":"eatingchalk,eatingchalkasmr,eatchalk,wetchalkeating,asmrchalkeating,chalkeatingchallenge,chalkeatinglovers,loveeatingchalk,chalkpencileating",
                     "url":""},
                 "knifechallenge":
-                    {"name":"knifechallenge, knifechallange, knifechallanege",
+                    {"name":"knifechallenge,knifechallange,knifechallanege",
                     "url":""},
                 "strippatiktok":
-                    {"name":"strippatiktok, striptok, striptiktok, strippa, strippaoftiktok, strippatik, strippeertiktok, strippatiktok2021, strippatok",
+                    {"name":"strippatiktok,striptok,striptiktok,strippa,strippaoftiktok,strippatik,strippeertiktok,strippatiktok2021,strippatok",
                     "url":""},
                 "fightchallenge":
-                    {"name":"fightchallenge, fighting, fights, fightscene, fightscenechallenge, fightvideo, fightvideos, fightnightchallenge",
+                    {"name":"fightchallenge,fighting,fights,fightscene,fightscenechallenge,fightvideo,fightvideos,fightnightchallenge",
                     "url":""}
                 # insert challenge here
             }
