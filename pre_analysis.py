@@ -7,15 +7,15 @@ import numpy as np
 POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
                   "emojichallenge",
-                  "itookanap"]
+                  "colpiditesta",
+                  "boredinthehouse"]
 '''
-                  "boredinthehouse",
                   "plankchallenge",
-                  "makeupchallenge",
-                  "colpiditesta"] # list of selected positive challenges
+                  "makeupchallenge" #list of selected positive challenges
 '''
-NEG_CHALLENGES = ["silhouettechallenge"]
-                 # "bugsbunnychallenge"] # list of selected negative challenges
+NEG_CHALLENGES = ["silhouettechallenge",
+                  "bugsbunny",
+                  "strippatiktok"] #list of selected negative challenges
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 
 def reset_stats():
@@ -35,7 +35,12 @@ def reset_stats():
             "stats_commentCount":[],
             "stats_diggCount":[],
             "stats_playCount":[],
-            "music_id_count":[]}
+            "music_id_count":[],
+            "authorStats_diggCount":[],
+            "authorStats_followingCount":[],
+            "authorStats_heartCount":[],
+            "authorStats_followerCount":[],
+            "authorStats_videoCount":[]}
 
 def print_results(arr, _type=False):
     text = "POSITIVE"
@@ -59,6 +64,11 @@ def print_results(arr, _type=False):
     print("Mean comments count: " + str(np.mean(arr["stats_commentCount"])) + " (std: " + str(np.std(arr["stats_commentCount"])) + ")")
     print("Mean views count: " + str(np.mean(arr["stats_playCount"])) + " (std: " + str(np.std(arr["stats_playCount"])) + ")")
     print("Mean different music count: " + str(np.mean(arr["music_id_count"])) + " (std: " + str(np.std(arr["music_id_count"])) + ")")
+    print("Mean likes given by the author count: " + str(np.mean(arr["authorStats_diggCount"])) + " (std: " + str(np.std(arr["authorStats_diggCount"])) + ")")
+    print("Mean author following count: " + str(np.mean(arr["authorStats_followingCount"])) + " (std: " + str(np.std(arr["authorStats_followingCount"])) + ")")
+    print("Mean likes received by the author count: " + str(np.mean(arr["authorStats_heartCount"])) + " (std: " + str(np.std(arr["authorStats_heartCount"])) + ")")
+    print("Mean author follower count: " + str(np.mean(arr["authorStats_followerCount"])) + " (std: " + str(np.std(arr["authorStats_followerCount"])) + ")")
+    print("Mean published videos by the author count: " + str(np.mean(arr["authorStats_videoCount"])) + " (std: " + str(np.std(arr["authorStats_videoCount"])) + ")")
     print("********************************************************")
 
 flag = False
@@ -89,5 +99,10 @@ for elem in ALL_CHALLENGES:
         STATS["stats_commentCount"].append(df["stats_commentCount"].mean())
         STATS["stats_playCount"].append(df["stats_playCount"].mean())
         STATS["music_id_count"].append(df['music_id'].value_counts().count())
+        STATS["authorStats_diggCount"].append(df["authorStats_diggCount"].mean())
+        STATS["authorStats_followingCount"].append(df["authorStats_followingCount"].mean())
+        STATS["authorStats_heartCount"].append(df["authorStats_heartCount"].mean())
+        STATS["authorStats_followerCount"].append(df["authorStats_followerCount"].mean())
+        STATS["authorStats_videoCount"].append(df["authorStats_videoCount"].mean())
     print_results(STATS, flag)
     flag = True

@@ -99,6 +99,27 @@ challenges = { "itookanap":
                     "url":""},
                 "fireworks":
                     {"name":"firewroks,fireworks",
+                    "url":""},
+                "drinkchallenge":
+                    {"name":"drinkchallenge, drinkingchallenge, tiktokdrinkchallenge",
+                    "url":""},
+                "nakedchallenge":
+                    {"name":"nakedchallenge, nakedtiktok, alwaysnaked, fullynaked, nakedchallange, walkinnaked, nakedchalleng, thenakedchallenge, halfnaked",
+                    "url":""},
+                "burnhair":
+                    {"name":"burnhair, hairburn, burnyourhair, burnmyhair, hairburnchallenge, burnhairstupid",
+                    "url":""},
+                "eatingchalk":
+                    {"name":"eatingchalk, eatingchalkasmr, eatchalk, wetchalkeating, asmrchalkeating, chalkeatingchallenge, chalkeatinglovers, loveeatingchalk, chalkpencileating",
+                    "url":""},
+                "knifechallenge":
+                    {"name":"knifechallenge, knifechallange, knifechallanege",
+                    "url":""},
+                "strippatiktok":
+                    {"name":"strippatiktok, striptok, striptiktok, strippa, strippaoftiktok, strippatik, strippeertiktok, strippatiktok2021, strippatok",
+                    "url":""},
+                "fightchallenge":
+                    {"name":"fightchallenge, fighting, fights, fightscene, fightscenechallenge, fightvideo, fightvideos, fightnightchallenge",
                     "url":""}
                 # insert challenge here
             }

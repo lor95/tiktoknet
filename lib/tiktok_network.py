@@ -66,7 +66,12 @@ def graphCalculation(dataset, colorCriteria = "createTime"):
                                    "stats_diggCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_diggCount'].iloc[:].values[0],
                                    "stats_shareCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_shareCount'].iloc[:].values[0],
                                    "stats_commentCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_commentCount'].iloc[:].values[0],
-                                   "stats_playCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_playCount'].iloc[:].values[0]}
+                                   "stats_playCount":df.loc[df['author_id'].astype(np.int64) == node, 'stats_playCount'].iloc[:].values[0],
+                                   "authorStats_diggCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_diggCount'].iloc[:].values[0],
+                                   "authorStats_followingCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_followingCount'].iloc[:].values[0],
+                                   "authorStats_heartCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_heartCount'].iloc[:].values[0],
+                                   "authorStats_followerCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_followerCount'].iloc[:].values[0],
+                                   "authorStats_videoCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_videoCount'].iloc[:].values[0]}
                 val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime_norm'].iloc[:].values[0])
                 if df.loc[df['author_id'].astype(np.int64) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
