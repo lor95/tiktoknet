@@ -120,6 +120,9 @@ challenges = { "itookanap":
                     "url":""},
                 "fightchallenge":
                     {"name":"fightchallenge,fighting,fights,fightscene,fightscenechallenge,fightvideo,fightvideos,fightnightchallenge",
+                    "url":""},
+                "sugarbaby":
+                    {"name":"sugarbaby, sugarbabytips, sugarbabylife, sugarbabies, suggarbaby, sugarbabytiktok, suggarbabby, babysugar, sugarbabby, sugardaddy, sugardarddy, sugardady, suggardaddy, sugardadddy, sugardaddies, daddysugar, sugardadaddy, sugardad",
                     "url":""}
                 # insert challenge here
             }
