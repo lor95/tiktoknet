@@ -2,26 +2,25 @@ import pandas as pd
 import lib.challenges as challenges
 import lib.tiktok_network as nx
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
                   "emojichallenge",
                   "colpiditesta",
-                  "boredinthehouse"]
-'''
-                  "plankchallenge",
-                  "makeupchallenge" #list of selected positive challenges
-'''
+                  "boredinthehouse"] # list of selected positive challenges
 NEG_CHALLENGES = ["silhouettechallenge",
                   "bugsbunny",
                   "strippatiktok",
                   "firewroks",
                   "fightchallenge"] #list of selected negative challenges
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
+PLOT = [[],[]]
 
 def reset_stats():
-    return {"nnodes":[],
+    return {"span":[[] for x in range(0,100)],
+            "nnodes":[],
             "nedges":[],
             "mindegree":[],
             "moutdegree":[],
@@ -48,6 +47,11 @@ def print_results(arr, _type=False):
     text = "POSITIVE"
     if _type:
         text = "NEGATIVE"
+        for val in arr["span"]:
+            PLOT[1].append(np.mean(val))
+    else:
+        for val in arr["span"]:
+            PLOT[0].append(np.mean(val))
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
     print("Mean number of edges: " + str(np.mean(arr["nedges"])) + " (std: " + str(np.std(arr["nedges"])) + ")")
@@ -84,6 +88,8 @@ for elem in ALL_CHALLENGES:
             df = df.append(nodestats[node], ignore_index=True)
         df["createTime"] = pd.to_datetime(df["createTime"]) # convert to datetime
         timedelta = df["createTime"].max() - df["createTime"].min()
+        for i in range(0,100):
+            STATS["span"][i].append((df.loc[df["createTime"] <= (df["createTime"].min() + (timedelta*(i+1)/100))].shape[0])/gen_stats["nnodes"])
         STATS["nnodes"].append(gen_stats["nnodes"])
         STATS["nedges"].append(gen_stats["nedges"])
         STATS["mindegree"].append(gen_stats["mindegree"])
@@ -108,3 +114,16 @@ for elem in ALL_CHALLENGES:
         STATS["authorStats_videoCount"].append(df["authorStats_videoCount"].mean())
     print_results(STATS, flag)
     flag = True
+
+# plot
+plt.title("TikTok graph's expansion")
+plt.ylabel("mean number of nodes (normalized)")
+plt.xlabel("% trend's lifespan")
+plt.xticks(range(0,101,5))
+plt.grid("--")
+plt.gca().set_ylim(ymin=0, ymax=1)
+plt.gca().set_xlim(xmin=0, xmax=100)
+plt.plot(range(1,101), PLOT[0])
+plt.plot(range(1,101), PLOT[1])
+plt.legend(["positive trend's graph expansion", "negative trend's graph expansion"])
+plt.show()
