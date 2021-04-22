@@ -15,7 +15,9 @@ POS_CHALLENGES = ["bussitchallenge",
 '''
 NEG_CHALLENGES = ["silhouettechallenge",
                   "bugsbunny",
-                  "strippatiktok"] #list of selected negative challenges
+                  "strippatiktok",
+                  "firewroks",
+                  "fightchallenge"] #list of selected negative challenges
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 
 def reset_stats():

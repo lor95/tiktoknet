@@ -97,7 +97,7 @@ challenges = { "itookanap":
                 "dontbreathe":
                     {"name":"dontbreathe,dontbreathechallenge,dontbreath,dontbreathchallenge",
                     "url":""},
-                "fireworks":
+                "firewroks":
                     {"name":"firewroks,fireworks",
                     "url":""},
                 "drinkchallenge":
