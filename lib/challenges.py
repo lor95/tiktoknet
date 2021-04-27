@@ -123,6 +123,15 @@ challenges = { "itookanap":
                     "url":""},
                 "sugarbaby":
                     {"name":"sugarbaby, sugarbabytips, sugarbabylife, sugarbabies, suggarbaby, sugarbabytiktok, suggarbabby, babysugar, sugarbabby, sugardaddy, sugardarddy, sugardady, suggardaddy, sugardadddy, sugardaddies, daddysugar, sugardadaddy, sugardad",
+                    "url":""},
+                "foodcoloringchallenge":
+                    {"name":"foodcoloringchallenge, foodcoloring, foodcolouringchallenge, foodcoloringinwater, foodcoloringandmilk, redfoodcoloring, greenfoodcoloring, bluefoodcoloring",
+                    "url":""},
+                "updownchallenge":
+                    {"name":"updownchallenge, upanddown, UpDown, upanddownchallenge, updownupdownchallenge",
+                    "url":""},
+                "basketballbeerchallenge":
+                    {"name":"basketballbeerchallenge, basketballbeer, beerbasketballchallenge, basketballbeerfail, beerchallengebasketball, basketballbeerchallengefail, beerbasketball",
                     "url":""}
                 # insert challenge here
             }

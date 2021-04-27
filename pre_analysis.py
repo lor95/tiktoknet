@@ -9,14 +9,20 @@ POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
                   "emojichallenge",
                   "colpiditesta",
-                  "boredinthehouse"] # list of selected positive challenges
+                  "boredinthehouse",
+                  "ITookANap",
+                  "plankchallenge"] # list of selected positive challenges
 NEG_CHALLENGES = ["silhouettechallenge",
                   "bugsbunny",
                   "strippatiktok",
                   "firewroks",
-                  "fightchallenge"] #list of selected negative challenges
+                  "fightchallenge",
+                  "updownchallenge",
+                  "sugarbaby"] #list of selected negative challenges
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 PLOT = [[],[]]
+PLOTPOS = [[],[],[],[],[],[],[]]
+PLOTNEG = [[],[],[],[],[],[],[]]
 
 def reset_stats():
     return {"span":[[] for x in range(0,100)],
@@ -49,9 +55,13 @@ def print_results(arr, _type=False):
         text = "NEGATIVE"
         for val in arr["span"]:
             PLOT[1].append(np.mean(val))
+            for i in range (0,6):
+                PLOTNEG[i].append(val[i])
     else:
         for val in arr["span"]:
             PLOT[0].append(np.mean(val))
+            for i in range (0,6):
+                PLOTPOS[i].append(val[i])
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
     print("Mean number of edges: " + str(np.mean(arr["nedges"])) + " (std: " + str(np.std(arr["nedges"])) + ")")
@@ -126,4 +136,34 @@ plt.gca().set_xlim(xmin=0, xmax=100)
 plt.plot(range(1,101), PLOT[0])
 plt.plot(range(1,101), PLOT[1])
 plt.legend(["positive trend's graph expansion", "negative trend's graph expansion"])
+plt.show()
+
+#plotpos
+plt.title("TikTok graph's expansion (positive challenges)")
+plt.ylabel("mean number of nodes (normalized)")
+plt.xlabel("% trend's lifespan")
+plt.xticks(range(0,101,5))
+plt.grid("--")
+plt.gca().set_ylim(ymin=0, ymax=1)
+plt.gca().set_xlim(xmin=0, xmax=100)
+for i in range (0,6):
+    plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
+plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
+#plt.legend(["positive trend's graph expansion", "mean positive trend's graph expansion"])
+plt.legend()
+plt.show()
+
+#plotneg
+plt.title("TikTok graph's expansion (negative challenges)")
+plt.ylabel("mean number of nodes (normalized)")
+plt.xlabel("% trend's lifespan")
+plt.xticks(range(0,101,5))
+plt.grid("--")
+plt.gca().set_ylim(ymin=0, ymax=1)
+plt.gca().set_xlim(xmin=0, xmax=100)
+for i in range (0,6):
+    plt.plot(range(1,101), PLOTNEG[i], label=NEG_CHALLENGES[i])
+plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
+#plt.legend(["negative trend's graph expansion", "mean negative trend's graph expansion"])
+plt.legend()
 plt.show()
