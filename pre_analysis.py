@@ -149,7 +149,6 @@ plt.gca().set_xlim(xmin=0, xmax=100)
 for i in range (0,6):
     plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
-#plt.legend(["positive trend's graph expansion", "mean positive trend's graph expansion"])
 plt.legend()
 plt.show()
 
@@ -164,6 +163,5 @@ plt.gca().set_xlim(xmin=0, xmax=100)
 for i in range (0,6):
     plt.plot(range(1,101), PLOTNEG[i], label=NEG_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
-#plt.legend(["negative trend's graph expansion", "mean negative trend's graph expansion"])
 plt.legend()
 plt.show()
