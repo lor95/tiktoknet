@@ -48,19 +48,18 @@ def reset_stats():
             "authorStats_heartCount":[],
             "authorStats_followerCount":[],
             "authorStats_videoCount":[]}
-
 def print_results(arr, _type=False):
     text = "POSITIVE"
     if _type:
         text = "NEGATIVE"
         for val in arr["span"]:
             PLOT[1].append(np.mean(val))
-            for i in range (0,6):
+            for i in range (0,7):
                 PLOTNEG[i].append(val[i])
     else:
         for val in arr["span"]:
             PLOT[0].append(np.mean(val))
-            for i in range (0,6):
+            for i in range (0,7):
                 PLOTPOS[i].append(val[i])
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
@@ -124,7 +123,6 @@ for elem in ALL_CHALLENGES:
         STATS["authorStats_videoCount"].append(df["authorStats_videoCount"].mean())
     print_results(STATS, flag)
     flag = True
-
 # plot
 plt.title("TikTok graph's expansion")
 plt.ylabel("mean number of nodes (normalized)")
@@ -146,7 +144,7 @@ plt.xticks(range(0,101,5))
 plt.grid("--")
 plt.gca().set_ylim(ymin=0, ymax=1)
 plt.gca().set_xlim(xmin=0, xmax=100)
-for i in range (0,6):
+for i in range (0,7):
     plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
 plt.legend()
@@ -160,7 +158,7 @@ plt.xticks(range(0,101,5))
 plt.grid("--")
 plt.gca().set_ylim(ymin=0, ymax=1)
 plt.gca().set_xlim(xmin=0, xmax=100)
-for i in range (0,6):
+for i in range (0,7):
     plt.plot(range(1,101), PLOTNEG[i], label=NEG_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
 plt.legend()
