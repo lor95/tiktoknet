@@ -33,7 +33,7 @@ def graphStats(graph, _print=True):
         print('Density: '+str(stats["density"]))
     return stats
 
-def graphCalculation(dataset, colorCriteria = "createTime"):
+def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None):
     nodes = set()
     labels = dict()
     colors = list()
@@ -42,6 +42,11 @@ def graphCalculation(dataset, colorCriteria = "createTime"):
     pos = dict()
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
+    df['createTime'] = pd.to_datetime(df['createTime'])
+    if lifespanCond is not None:
+        lifespan = df['createTime'].max() - df['createTime'].min()
+
+        df = df.loc[df['createTime'] >= (df['createTime'].min() + (lifespan/100 *lifespanCond))]
     df = ETL2(df)
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
@@ -55,7 +60,7 @@ def graphCalculation(dataset, colorCriteria = "createTime"):
         edg.append(target)
         edges.append(edg)
     if colorCriteria == 'createTime':
-        df['createTime_norm'] = pd.to_datetime(df['createTime']).astype(np.int64) / 10e9
+        df['createTime_norm'] = df['createTime'].astype(np.int64) / 10e9
         df['createTime_norm'] = round((df['createTime_norm']-df['createTime_norm'].min())/(df['createTime_norm'].max()-df['createTime_norm'].min()) * 255) # RGB color
         for node in nodes:
             pos[node] = "" # prepare position dictionary

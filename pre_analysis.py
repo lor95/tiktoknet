@@ -19,10 +19,12 @@ NEG_CHALLENGES = ["silhouettechallenge",
                   "fightchallenge",
                   "updownchallenge",
                   "sugarbaby"] #list of selected negative challenges
+POS_CHALLENGES_COND = [None, None, 91, 99.9, None, None, 50]
+NEG_CHALLENGES_COND = [70, 93, None, None, None, None, None]
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 PLOT = [[],[]]
-PLOTPOS = [[],[],[],[],[],[],[]]
-PLOTNEG = [[],[],[],[],[],[],[]]
+PLOTPOS = [[] for x in POS_CHALLENGES]
+PLOTNEG = [[] for x in NEG_CHALLENGES]
 
 def reset_stats():
     return {"span":[[] for x in range(0,100)],
@@ -54,12 +56,12 @@ def print_results(arr, _type=False):
         text = "NEGATIVE"
         for val in arr["span"]:
             PLOT[1].append(np.mean(val))
-            for i in range (0,7):
+            for i in range(len(NEG_CHALLENGES)):
                 PLOTNEG[i].append(val[i])
     else:
         for val in arr["span"]:
             PLOT[0].append(np.mean(val))
-            for i in range (0,7):
+            for i in range(len(POS_CHALLENGES)):
                 PLOTPOS[i].append(val[i])
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
@@ -87,11 +89,16 @@ def print_results(arr, _type=False):
     print("********************************************************")
 
 flag = False
+counter = 0
 for elem in ALL_CHALLENGES:
     STATS = reset_stats()
     for challenge in elem:
+        if not flag:
+            cond = POS_CHALLENGES_COND[counter]
+        else:
+            cond = NEG_CHALLENGES_COND[counter]
         df = pd.DataFrame()
-        graph, _, _, _, nodestats = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0])
+        graph, _, _, _, nodestats = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
         gen_stats = nx.graphStats(graph, _print=False)
         for node in nodestats:
             df = df.append(nodestats[node], ignore_index=True)
@@ -121,8 +128,10 @@ for elem in ALL_CHALLENGES:
         STATS["authorStats_heartCount"].append(df["authorStats_heartCount"].mean())
         STATS["authorStats_followerCount"].append(df["authorStats_followerCount"].mean())
         STATS["authorStats_videoCount"].append(df["authorStats_videoCount"].mean())
+        counter += 1
     print_results(STATS, flag)
     flag = True
+    counter = 0
 # plot
 plt.title("TikTok graph's expansion")
 plt.ylabel("mean number of nodes (normalized)")
@@ -144,7 +153,7 @@ plt.xticks(range(0,101,5))
 plt.grid("--")
 plt.gca().set_ylim(ymin=0, ymax=1)
 plt.gca().set_xlim(xmin=0, xmax=100)
-for i in range (0,7):
+for i in range(len(POS_CHALLENGES)):
     plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
 plt.legend()
@@ -158,7 +167,7 @@ plt.xticks(range(0,101,5))
 plt.grid("--")
 plt.gca().set_ylim(ymin=0, ymax=1)
 plt.gca().set_xlim(xmin=0, xmax=100)
-for i in range (0,7):
+for i in range(len(NEG_CHALLENGES)):
     plt.plot(range(1,101), PLOTNEG[i], label=NEG_CHALLENGES[i])
 plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
 plt.legend()
