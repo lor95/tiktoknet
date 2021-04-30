@@ -132,6 +132,11 @@ for elem in ALL_CHALLENGES:
     print_results(STATS, flag)
     flag = True
     counter = 0
+MeanTrendChallenges = {'PosChallenges':PLOT[0],'NegChallenges': PLOT[1]}
+dfChallenges=pd.DataFrame.from_dict(MeanTrendChallenges, orient='index')
+dfChallenges=dfChallenges.transpose()
+dfChallenges.to_csv("dataset/meantrendchallenges.csv", sep=';', index=False)
+
 # plot
 plt.title("TikTok graph's expansion")
 plt.ylabel("mean number of nodes (normalized)")
