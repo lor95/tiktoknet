@@ -4,7 +4,6 @@ import lib.tiktok_network as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
                   "emojichallenge",
@@ -12,6 +11,7 @@ POS_CHALLENGES = ["bussitchallenge",
                   "boredinthehouse",
                   "ITookANap",
                   "plankchallenge"] # list of selected positive challenges
+
 NEG_CHALLENGES = ["silhouettechallenge",
                   "bugsbunny",
                   "strippatiktok",
@@ -19,8 +19,9 @@ NEG_CHALLENGES = ["silhouettechallenge",
                   "fightchallenge",
                   "updownchallenge",
                   "sugarbaby"] #list of selected negative challenges
+
 POS_CHALLENGES_COND = [None, None, 91, 99.9, None, None, 50]
-NEG_CHALLENGES_COND = [70, 93, None, None, None, None, None]
+NEG_CHALLENGES_COND = [60, 93, None, None, None, None, None]
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 PLOT = [[],[]]
 PLOTPOS = [[] for x in POS_CHALLENGES]
@@ -137,6 +138,7 @@ dfChallenges=pd.DataFrame.from_dict(MeanTrendChallenges, orient='index')
 dfChallenges=dfChallenges.transpose()
 dfChallenges.to_csv("dataset/meantrendchallenges.csv", sep=';', index=False)
 
+'''
 # plot
 plt.title("TikTok graph's expansion")
 plt.ylabel("mean number of nodes (normalized)")
@@ -149,6 +151,7 @@ plt.plot(range(1,101), PLOT[0])
 plt.plot(range(1,101), PLOT[1])
 plt.legend(["positive trend's graph expansion", "negative trend's graph expansion"])
 plt.show()
+'''
 
 #plotpos
 plt.title("TikTok graph's expansion (positive challenges)")
@@ -160,6 +163,11 @@ plt.gca().set_ylim(ymin=0, ymax=1)
 plt.gca().set_xlim(xmin=0, xmax=100)
 for i in range(len(POS_CHALLENGES)):
     plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
+    z,_,_,_,_ = np.polyfit(range(1,101), PLOTPOS[i], 4, full=True)
+    p = np.poly1d(z)
+    q = p.deriv().deriv()
+    #plt.plot(range(1,101), p(range(1,101)))
+    print(POS_CHALLENGES[i] + ': ' + str(np.roots(q)))
 plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
 plt.legend()
 plt.show()
