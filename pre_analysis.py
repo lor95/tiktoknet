@@ -59,6 +59,7 @@ def print_results(arr, _type=False):
     text = "POSITIVE"
     if _type:
         text = "NEGATIVE"
+    '''
         for val in arr["span"]:
             PLOT[1].append(np.mean(val))
             for i in range(len(NEG_CHALLENGES)):
@@ -66,7 +67,7 @@ def print_results(arr, _type=False):
         for val in arr["n_nodes"]:
             PLOTCOUNT[1].append(np.mean(val))
             for i in range(len(NEG_CHALLENGES)):
-                PLOTNEGCOUNT[1].append(val[i])
+                PLOTNEGCOUNT[i].append(val[i])
     else:
         for val in arr["span"]:
             PLOT[0].append(np.mean(val))
@@ -75,7 +76,8 @@ def print_results(arr, _type=False):
         for val in arr["n_nodes"]:
             PLOTCOUNT[0].append(np.mean(val))
             for i in range(len(POS_CHALLENGES)):
-                PLOTPOSCOUNT[0].append(val[i])
+                PLOTPOSCOUNT[i].append(val[i])
+    '''
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
     print("Mean number of edges: " + str(np.mean(arr["nedges"])) + " (std: " + str(np.std(arr["nedges"])) + ")")
@@ -166,37 +168,44 @@ plt.plot(range(1,101), PLOT[1])
 plt.legend(["positive trend's graph expansion", "negative trend's graph expansion"])
 plt.show()
 '''
-
+'''
 plt.title("TikTok graph's expansion")
 plt.ylabel("")
 plt.xlabel("% trend's lifespan")
 plt.xticks(range(0,101,5))
 plt.grid("--")
 #plt.gca().set_ylim(ymin=0, ymax=0.04)
-plt.gca().set_ylim(ymin=0, ymax=0.04)
+plt.gca().set_ylim(ymin=0, ymax=20)
 plt.gca().set_xlim(xmin=0, xmax=100)
-#plt.plot(range(1,101), PLOTCOUNT[0])
+print(len(PLOTPOSCOUNT[0]))
+plt.plot(range(1,101), PLOTCOUNT[0])
+'''
 #plt.plot(range(1,101), PLOT[0])
-z,_,_,_,_ = np.polyfit(range(1,101), PLOT[0], 4, full=True)
+'''
+z,_,_,_,_ = np.polyfit(range(1,101), PLOTPOSCOUNT[0], 4, full=True)
 p = np.poly1d(z)
 q = p.deriv()
 print(p)
 print(q)
-plt.plot(range(1,101), q(range(1,101)))
+'''
+#plt.plot(range(1,101), q(range(1,101)))
 #plt.plot(range(1,101), p(range(1,101)))
 #plt.plot(range(1,101), PLOTCOUNT[1])
 
 #plt.plot(range(1,101), PLOT[1])
+'''
 z,_,_,_,_ = np.polyfit(range(1,101), PLOT[1], 4, full=True)
 p = np.poly1d(z)
 q = p.deriv()
+'''
 #plt.plot(range(1,101), p(range(1,101)))
-plt.plot(range(1,101), q(range(1,101)))
-plt.legend(["positive trend's deriv", "negative trend deriv"])
-plt.show()
+#plt.plot(range(1,101), q(range(1,101)))
+#plt.legend(["positive trend's deriv"])
+#plt.show()
 
 
 #plotpos
+'''
 plt.title("TikTok graph's expansion (positive challenges)")
 plt.ylabel("mean number of nodes (normalized)")
 plt.xlabel("% trend's lifespan")
@@ -228,3 +237,4 @@ for i in range(len(NEG_CHALLENGES)):
 plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
 plt.legend()
 plt.show()
+'''

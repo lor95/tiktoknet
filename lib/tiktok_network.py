@@ -45,9 +45,10 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
     df['createTime'] = pd.to_datetime(df['createTime'])
     if lifespanCond is not None:
         lifespan = df['createTime'].max() - df['createTime'].min()
-
         df = df.loc[df['createTime'] >= (df['createTime'].min() + (lifespan/100 *lifespanCond))]
+    dtemp = df.copy()
     df = ETL2(df)
+    dfret = df.copy()
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
         labels[int(row["author_id"])] = row["author_uniqueId"]
@@ -83,6 +84,7 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
                 else:
                     colors.append('#%02x%02x%02x' % (val, val, val))
             else:
+                dfret = dfret.append(dtemp.loc[dtemp['author_id'].astype(np.int64) == node].iloc[:])
                 val = 256
                 colors.append("#ffff57")
             try:
@@ -96,5 +98,5 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
-    df.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
-    return [graph, labels, colors, pos, nodestats, df]
+    dfret.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
+    return [graph, labels, colors, pos, nodestats, dfret]
