@@ -96,4 +96,5 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
-    return [graph, labels, colors, pos, nodestats]
+    df.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
+    return [graph, labels, colors, pos, nodestats, df]

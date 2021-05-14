@@ -111,7 +111,7 @@ for elem in ALL_CHALLENGES:
         else:
             cond = NEG_CHALLENGES_COND[counter]
         df = pd.DataFrame()
-        graph, _, _, _, nodestats = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
+        graph, _, _, _, nodestats, _ = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
         gen_stats = nx.graphStats(graph, _print=False)
         for node in nodestats:
             df = df.append(nodestats[node], ignore_index=True)
