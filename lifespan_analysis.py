@@ -79,10 +79,11 @@ for p in n_challenges_list:
     video_published.reset_index(inplace=True)
     video_published.columns = ['life_day', 'video_count']
     n_changes_by_day[p] = split_in_perc(video_published)
-
-current = n_changes_by_day['updownchallenge']
-current.to_csv("dataset/dfcurves_updownchallenge.csv", sep=';', index=False)
-
+'''
+chall_ = 'bussitchallenge'
+current = p_changes_by_day[chall_]
+current.to_csv("dataset/dfcurves_"+chall_+".csv", sep=';', index=False)
+'''
 intervals = {}
 intervals["challenge"] = []
 intervals["n_intervals"] = []
@@ -92,6 +93,9 @@ intervals["diff_videos_intervals"] = []
 for challenge in p_changes_by_day:
     intervals["challenge"].append(challenge)
     current = p_changes_by_day[challenge]
+    s=100000000
+    if challenge == 'ITookANap':
+        s = 50000000
     function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
     second_derivate = function.derivative(n=2)
     inf_points = second_derivate.roots()
@@ -104,6 +108,15 @@ for challenge in p_changes_by_day:
     valori_punti = [function(p) for p in punti_andamenti]
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
+    plt.title(challenge, fontsize=20)    
+    xnew = np.arange(0, 100, perc_to_sum)
+    ynew = function(xnew)
+    plt.plot(xnew, ynew)
+    for inf in inf_points:
+        plt.axvline(x=inf)
+    plt.xlabel("% of lifespan", fontsize=16)
+    plt.ylabel("Number of nodes", fontsize=16)
+    plt.show()
     
 for challenge in n_changes_by_day:
     intervals["challenge"].append(challenge)
@@ -120,18 +133,27 @@ for challenge in n_changes_by_day:
     valori_punti = [function(p) for p in punti_andamenti]
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
+    plt.title(challenge, fontsize=20)    
+    xnew = np.arange(0, 100, perc_to_sum)
+    ynew = function(xnew)
+    plt.plot(xnew, ynew)
+    for inf in inf_points:
+        plt.axvline(x=inf)
+    plt.xlabel("% of lifespan", fontsize=16)
+    plt.ylabel("Number of nodes", fontsize=16)
+    plt.show()
     
 intervals_d = pd.DataFrame.from_dict(intervals)
 intervals_d.to_csv('intervals.csv', index=False)
 
-
+'''
 plt.figure(figsize=(20, 15))
 #for method in interpolations_methods:
 function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
 first_derivate = function.derivative()
 second_derivate = function.derivative(n=2)
 
-plt.title("Curva interpolata", fontsize=20)    
+plt.title(chall_, fontsize=20)    
 xnew = np.arange(0, 100, perc_to_sum)
 ynew = function(xnew)
 plt.plot(xnew, ynew)
@@ -149,4 +171,4 @@ plt.xlabel('% of lifespan', fontsize=16)
 plt.ylabel('Number of nodes', fontsize=16)
 plt.show()
 print("INFLECTION POINTS: {}".format(second_derivate.roots()))
-
+'''
