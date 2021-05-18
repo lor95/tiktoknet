@@ -124,7 +124,7 @@ for challenge in n_changes_by_day:
 intervals_d = pd.DataFrame.from_dict(intervals)
 intervals_d.to_csv('intervals.csv', index=False)
 
-'''
+
 plt.figure(figsize=(20, 15))
 #for method in interpolations_methods:
 function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
@@ -148,5 +148,5 @@ plt.plot(xnew, ynew)
 plt.xlabel('% of lifespan', fontsize=16)
 plt.ylabel('Number of nodes', fontsize=16)
 plt.show()
-print("INFLECTION POINTS: {}".format(second_derivate.roots()))'''
+print("INFLECTION POINTS: {}".format(second_derivate.roots()))
 
