@@ -83,7 +83,48 @@ for p in n_challenges_list:
 current = n_changes_by_day['updownchallenge']
 current.to_csv("dataset/dfcurves_updownchallenge.csv", sep=';', index=False)
 
+intervals = {}
+intervals["challenge"] = []
+intervals["n_intervals"] = []
+intervals["points"] = []
+intervals["diff_videos_intervals"] = []
 
+for challenge in p_changes_by_day:
+    intervals["challenge"].append(challenge)
+    current = p_changes_by_day[challenge]
+    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
+    second_derivate = function.derivative(n=2)
+    inf_points = second_derivate.roots()
+    intervals["n_intervals"].append(len(inf_points))
+    points = [5 * round(p/5) for p in inf_points]
+    intervals["points"].append(points)
+    punti_andamenti = [0]
+    punti_andamenti.extend(inf_points)
+    punti_andamenti.extend([100])
+    valori_punti = [function(p) for p in punti_andamenti]
+    differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
+    intervals["diff_videos_intervals"].append(differenze)
+    
+for challenge in n_changes_by_day:
+    intervals["challenge"].append(challenge)
+    current = n_changes_by_day[challenge]
+    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
+    second_derivate = function.derivative(n=2)
+    inf_points = second_derivate.roots()
+    intervals["n_intervals"].append(len(inf_points))
+    points = [5 * round(p/5) for p in inf_points]
+    intervals["points"].append(points)
+    punti_andamenti = [0]
+    punti_andamenti.extend(inf_points)
+    punti_andamenti.extend([100])
+    valori_punti = [function(p) for p in punti_andamenti]
+    differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
+    intervals["diff_videos_intervals"].append(differenze)
+    
+intervals_d = pd.DataFrame.from_dict(intervals)
+intervals_d.to_csv('intervals.csv', index=False)
+
+'''
 plt.figure(figsize=(20, 15))
 #for method in interpolations_methods:
 function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
@@ -107,5 +148,5 @@ plt.plot(xnew, ynew)
 plt.xlabel('% of lifespan', fontsize=16)
 plt.ylabel('Number of nodes', fontsize=16)
 plt.show()
-print("INFLECTION POINTS: {}".format(second_derivate.roots()))
+print("INFLECTION POINTS: {}".format(second_derivate.roots()))'''
 
