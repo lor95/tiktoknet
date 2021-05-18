@@ -93,10 +93,10 @@ intervals["diff_videos_intervals"] = []
 for challenge in p_changes_by_day:
     intervals["challenge"].append(challenge)
     current = p_changes_by_day[challenge]
-    s=100000000
+    s =100000000
     if challenge == 'ITookANap':
-        s = 50000000
-    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
+        s = 410
+    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=s)
     second_derivate = function.derivative(n=2)
     inf_points = second_derivate.roots()
     intervals["n_intervals"].append(len(inf_points))
