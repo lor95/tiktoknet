@@ -96,9 +96,10 @@ for challenge in p_changes_by_day:
     s =100000000
     if challenge == 'ITookANap':
         s = 410
-    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=s)
-    second_derivate = function.derivative(n=2)
-    inf_points = second_derivate.roots()
+    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=4, s=s)
+    first_derivate = function.derivative(n=1)
+    #second_derivate = function.derivative(n=2)
+    inf_points = first_derivate.roots()
     intervals["n_intervals"].append(len(inf_points))
     points = [5 * round(p/5) for p in inf_points]
     intervals["points"].append(points)
@@ -121,9 +122,15 @@ for challenge in p_changes_by_day:
 for challenge in n_changes_by_day:
     intervals["challenge"].append(challenge)
     current = n_changes_by_day[challenge]
-    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=5, s=100000000)
-    second_derivate = function.derivative(n=2)
-    inf_points = second_derivate.roots()
+    s =100000000
+    if challenge == 'strippatiktok':
+        s = 200
+    if challenge == 'updownchallenge':
+        s = 11700
+    function = interpolate.UnivariateSpline(current.index,current["video_published"], k=4, s=s)
+    first_derivate = function.derivative(n=1)
+    #second_derivate = function.derivative(n=2)
+    inf_points = first_derivate.roots()
     intervals["n_intervals"].append(len(inf_points))
     points = [5 * round(p/5) for p in inf_points]
     intervals["points"].append(points)
