@@ -44,6 +44,8 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df['createTime'] = pd.to_datetime(df['createTime'])
+    df = ETL2(df, remAutoLikes)
+    dtemp = df.copy()
     lifespan = df['createTime'].max() - df['createTime'].min()
     if intervals is not None:
         lifespanCond = None
@@ -52,8 +54,6 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
         df = df.loc[df["createTime"].between(lim_inf, lim_sup)]
     if lifespanCond is not None:
         df = df.loc[df['createTime'] >= (df['createTime'].min() + (lifespan/100 *lifespanCond))]
-    dtemp = df.copy()
-    df = ETL2(df, remAutoLikes)
     dfnet = df.copy()
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
