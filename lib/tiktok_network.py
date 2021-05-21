@@ -44,8 +44,8 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df['createTime'] = pd.to_datetime(df['createTime'])
-    df = ETL2(df, remAutoLikes)
     dtemp = df.copy()
+    df = ETL2(df, remAutoLikes)
     lifespan = df['createTime'].max() - df['createTime'].min()
     if intervals is not None:
         lifespanCond = None
