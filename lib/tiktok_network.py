@@ -4,9 +4,10 @@ import numpy as np
 from random import randrange
 import math
 
-def ETL2(dataFrame):
+def ETL2(dataFrame, remAutoLikes):
     dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!= "-"]
-    dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!=dataFrame["author_uniqueId"]] # remove unconnected nodes
+    if remAutoLikes:
+        dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!=dataFrame["author_uniqueId"]] # remove unconnected nodes
     return dataFrame
 
 def position_1(radius):
@@ -33,7 +34,7 @@ def graphStats(graph, _print=True):
         print('Density: '+str(stats["density"]))
     return stats
 
-def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None):
+def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None, intervals = None, remAutoLikes = True):
     nodes = set()
     labels = dict()
     colors = list()
@@ -43,12 +44,17 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df['createTime'] = pd.to_datetime(df['createTime'])
+    lifespan = df['createTime'].max() - df['createTime'].min()
+    if intervals is not None:
+        lifespanCond = None
+        lim_sup = df["createTime"].min() + (lifespan/100 * intervals[1])
+        lim_inf = df["createTime"].min() + (lifespan/100 * intervals[0])
+        df = df.loc[df["createTime"].between(lim_inf, lim_sup)]
     if lifespanCond is not None:
-        lifespan = df['createTime'].max() - df['createTime'].min()
         df = df.loc[df['createTime'] >= (df['createTime'].min() + (lifespan/100 *lifespanCond))]
     dtemp = df.copy()
-    df = ETL2(df)
-    dfret = df.copy()
+    df = ETL2(df, remAutoLikes)
+    dfnet = df.copy()
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
         labels[int(row["author_id"])] = row["author_uniqueId"]
@@ -78,13 +84,16 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
                                    "authorStats_heartCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_heartCount'].iloc[:].values[0],
                                    "authorStats_followerCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_followerCount'].iloc[:].values[0],
                                    "authorStats_videoCount":df.loc[df['author_id'].astype(np.int64) == node, 'authorStats_videoCount'].iloc[:].values[0]}
-                val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime_norm'].iloc[:].values[0])
+                try:
+                    val = int(df.loc[df['author_id'].astype(np.int64) == node, 'createTime_norm'].iloc[:].values[0])
+                except:
+                    val = 0
                 if df.loc[df['author_id'].astype(np.int64) == node, 'originalVideo'].iloc[:].values[0] == 1:
                     colors.append("#ff0000")
                 else:
                     colors.append('#%02x%02x%02x' % (val, val, val))
             else:
-                dfret = dfret.append(dtemp.loc[dtemp['author_id'].astype(np.int64) == node].iloc[:])
+                dfnet = dfnet.append(dtemp.loc[dtemp['author_id'].astype(np.int64) == node].iloc[:])
                 val = 256
                 colors.append("#ffff57")
             try:
@@ -98,5 +107,6 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None)
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
     graph.add_edges_from(edges)
-    dfret.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
-    return [graph, labels, colors, pos, nodestats, dfret]
+    dfnet.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
+    dfinterval = df # represents the dataset of the net
+    return [graph, labels, colors, pos, nodestats, dfnet, dfinterval]
