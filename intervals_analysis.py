@@ -1,3 +1,5 @@
+from networkx.algorithms.components.connected import number_connected_components
+from networkx.classes.function import subgraph
 import pandas as pd
 from ast import literal_eval
 import lib.tiktok_network as ntx
@@ -6,11 +8,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def graphStats(graph, _print=True):
+    unconnected_graph = graph.to_undirected()
+    Gcc = sorted(nx.connected_components(unconnected_graph), key=len, reverse=True) 
     stats = {"nnodes":graph.number_of_nodes(),
              "nedges":graph.number_of_edges(),
              "density":nx.density(graph),
              "degree_centrality_media": sum(list(nx.degree_centrality(graph).values()))/len(list(nx.degree_centrality(graph).values())),
-             "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000)))/len(list(nx.eigenvector_centrality(graph, max_iter=100000)))
+             "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000)))/len(list(nx.eigenvector_centrality(graph, max_iter=100000))),
+             "number_connected_components": number_connected_components(unconnected_graph),
+             "maxnodes_connected_components": unconnected_graph.subgraph(Gcc[0]).number_of_nodes()
     }
     return stats
 
@@ -37,7 +43,12 @@ dataintervals={
     'following_autore_std':[],
     'degree_centrality_media':[],
     'eigenvector_centrality':[],
-    'numero_video':[]}
+    'numero_video':[],
+    'numero_utenti_verificati':[],
+    'numero_componenti_connesse':[],
+    'maxnodi_componenti_connesse':[],
+    'lifespan':[],
+    'diff_num_video_interv_prec':[]}
 
 def reset_stats():
     return {"nnodes":[],
@@ -54,8 +65,12 @@ def reset_stats():
             "authorStats_followerCount":[],
             "degree_centrality_media":[],
             "eigenvector_centrality":[],
-            "numero_video":[]
-            }
+            "numero_video":[],
+            "numero_utenti_verificati":[],
+            "numero_componenti_connesse":[],
+            "maxnodi_componenti_connesse":[],
+            "lifespan":[],
+            "diff_num_video_interv_prec":[]}
 
 def print_results(arr, _type=False): 
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"]))) 
@@ -73,6 +88,11 @@ def print_results(arr, _type=False):
     print("Degree centrality: " + str(arr["degree_centrality_media"]))
     print("Eigenvector centrality: " + str(arr["eigenvector_centrality"]))
     print("Number of videos: " + str(np.count_nonzero(arr["numero_video"])))
+    print("Number of verified users: "+ str(np.count_nonzero(arr["numero_utenti_verificati"])))
+    print("Number of connected components: " + str(arr["numero_componenti_connesse"]))
+    print("Max number of nodes in connected components: " + str(arr["maxnodi_componenti_connesse"]))
+    print("Lifespan: " + str(np.mean(arr["lifespan"])))
+    print("Difference number of video with prec interval: " + str(np.mean(arr["diff_num_video_interv_prec"])))
     print("********************************************************")
 
 df = pd.read_csv("dataset/intervals.csv")
@@ -99,6 +119,8 @@ for index, row in df.iterrows():
             continue
         #plt.show()
         gen_stats = graphStats(graph, _print=False)
+        df_int["createTime"] = pd.to_datetime(df_int["createTime"]) # convert to datetime
+        timedelta = df_int["createTime"].max() - df_int["createTime"].min()
         STATS = reset_stats()
         STATS["nnodes"].append(gen_stats["nnodes"])
         STATS["nedges"].append(gen_stats["nedges"])
@@ -115,6 +137,10 @@ for index, row in df.iterrows():
         STATS["authorStats_followerCount"].append(df_int["authorStats_followerCount"])
         STATS["authorStats_heartCount"].append(df_int["authorStats_heartCount"])  
         STATS["numero_video"].append(df_int["id"])
+        STATS["numero_utenti_verificati"].append(np.where(df_int["author_verified"])[0])
+        STATS["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
+        STATS["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
+        STATS["lifespan"].append(timedelta.days)
         dataintervals["nome_challenge"].append(challenge)
         dataintervals["intervallo"].append(pairs)
         dataintervals["numero_nodi"].append(gen_stats["nnodes"])
@@ -138,7 +164,22 @@ for index, row in df.iterrows():
         dataintervals["following_autore"].append(df_int["authorStats_followingCount"].mean())
         dataintervals["following_autore_std"].append(np.std(df_int["authorStats_followingCount"]))
         dataintervals["numero_video"].append(df_int["id"].count())
+        dataintervals["numero_utenti_verificati"].append(np.count_nonzero(np.where(df_int["author_verified"])[0]))
+        dataintervals["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
+        dataintervals["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
+        dataintervals["lifespan"].append(timedelta.days)
+        dfdataintervals=pd.DataFrame.from_dict(dataintervals, orient='index')
+        dfdataintervals=dfdataintervals.transpose()
+        NUMVIDEO = dfdataintervals.loc[:,'numero_video']
+        VIDEO_VALORI = NUMVIDEO.values
+        if intervals[0] == 0:
+            diff_video = VIDEO_VALORI
+        else:  
+            diff_video = [j-i for i, j in zip(VIDEO_VALORI[:-1], VIDEO_VALORI[1:])]
+        STATS["diff_num_video_interv_prec"].append(diff_video)
+        dataintervals["diff_num_video_interv_prec"].append(diff_video)
         print_results(STATS)
 dfdataintervals=pd.DataFrame.from_dict(dataintervals, orient='index')
 dfdataintervals=dfdataintervals.transpose()
 dfdataintervals.to_csv("dataset/dataintervals.csv", sep=';', index=False)
+
