@@ -92,9 +92,10 @@ def print_results(arr, _type=False):
     print("Number of connected components: " + str(arr["numero_componenti_connesse"]))
     print("Max number of nodes in connected components: " + str(arr["maxnodi_componenti_connesse"]))
     print("Lifespan: " + str(np.mean(arr["lifespan"])))
-    print("Difference number of video with prec interval: " + str(np.mean(arr["diff_num_video_interv_prec"])))
+    #print("Difference number of video with prec interval: " + str(np.mean(arr["diff_num_video_interv_prec"])))
     print("********************************************************")
-
+numero_video = 0
+vid = []
 df = pd.read_csv("dataset/intervals.csv")
 df["points"] = df["points"].apply(literal_eval)
 for index, row in df.iterrows():
@@ -168,18 +169,16 @@ for index, row in df.iterrows():
         dataintervals["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
         dataintervals["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
         dataintervals["lifespan"].append(timedelta.days)
-        dfdataintervals=pd.DataFrame.from_dict(dataintervals, orient='index')
-        dfdataintervals=dfdataintervals.transpose()
-        NUMVIDEO = dfdataintervals.loc[:,'numero_video']
-        VIDEO_VALORI = NUMVIDEO.values
-        if intervals[0] == 0:
-            diff_video = VIDEO_VALORI
+        if pairs[0] == 0:
+            numero_video = df_int["id"].count()
+            vid.append(numero_video)
         else:  
-            diff_video = [j-i for i, j in zip(VIDEO_VALORI[:-1], VIDEO_VALORI[1:])]
-        STATS["diff_num_video_interv_prec"].append(diff_video)
-        dataintervals["diff_num_video_interv_prec"].append(diff_video)
+            numero_video = df_int["id"].count() - numero_video
+            vid.append(numero_video)
+            numero_video = df_int["id"].count()
         print_results(STATS)
 dfdataintervals=pd.DataFrame.from_dict(dataintervals, orient='index')
 dfdataintervals=dfdataintervals.transpose()
+dataintervals["diff_num_video_interv_prec"] = vid
 dfdataintervals.to_csv("dataset/dataintervals.csv", sep=';', index=False)
 
