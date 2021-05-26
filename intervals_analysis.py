@@ -96,6 +96,8 @@ def print_results(arr, _type=False):
     print("********************************************************")
 numero_video = 0
 vid = []
+std_times = []
+mean_times = []
 df = pd.read_csv("dataset/intervals.csv")
 df["points"] = df["points"].apply(literal_eval)
 for index, row in df.iterrows():
@@ -121,6 +123,7 @@ for index, row in df.iterrows():
         #plt.show()
         gen_stats = graphStats(graph, _print=False)
         df_int["createTime"] = pd.to_datetime(df_int["createTime"]) # convert to datetime
+        df_int = df_int.sort_values(by='createTime')
         timedelta = df_int["createTime"].max() - df_int["createTime"].min()
         STATS = reset_stats()
         STATS["nnodes"].append(gen_stats["nnodes"])
@@ -172,13 +175,31 @@ for index, row in df.iterrows():
         if pairs[0] == 0:
             numero_video = df_int["id"].count()
             vid.append(numero_video)
+            #times.append(0)
         else:  
             numero_video = df_int["id"].count() - numero_video
             vid.append(numero_video)
             numero_video = df_int["id"].count()
+            #times.append(df_int['createTime'] - prev_time)
+        
+        times = []
+        prev_time = 0
+        fl = True
+        for index1,row1 in df_int.iterrows():
+            if fl:
+                times.append(0)
+            else:
+                times.append((row1["createTime"]-prev_time)/ pd.Timedelta('1 hour'))
+            prev_time = row1["createTime"]
+            fl = False
+        #print(times)
+        mean_times.append(np.mean(times))
+        std_times.append(np.std(times))
         print_results(STATS)
 dfdataintervals=pd.DataFrame.from_dict(dataintervals, orient='index')
 dfdataintervals=dfdataintervals.transpose()
-dataintervals["diff_num_video_interv_prec"] = vid
+dfdataintervals["diff_num_video_interv_prec"] = vid
+dfdataintervals["hours_between_mean"] = mean_times
+dfdataintervals["hours_between_std"] = std_times
 dfdataintervals.to_csv("dataset/dataintervals.csv", sep=';', index=False)
 
