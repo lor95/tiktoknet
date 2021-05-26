@@ -13,6 +13,7 @@ def graphStats(graph, _print=True):
     stats = {"nnodes":graph.number_of_nodes(),
              "nedges":graph.number_of_edges(),
              "density":nx.density(graph),
+             "mindegree":np.mean([x[1] for x in graph.in_degree()]),
              "degree_centrality_media": sum(list(nx.degree_centrality(graph).values()))/len(list(nx.degree_centrality(graph).values())),
              "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000)))/len(list(nx.eigenvector_centrality(graph, max_iter=100000))),
              "number_connected_components": number_connected_components(unconnected_graph),
@@ -48,7 +49,8 @@ dataintervals={
     'numero_componenti_connesse':[],
     'maxnodi_componenti_connesse':[],
     'lifespan':[],
-    'diff_num_video_interv_prec':[]}
+    'mindegree':[],
+    'mindegree_std':[]}
 
 def reset_stats():
     return {"nnodes":[],
@@ -70,7 +72,7 @@ def reset_stats():
             "numero_componenti_connesse":[],
             "maxnodi_componenti_connesse":[],
             "lifespan":[],
-            "diff_num_video_interv_prec":[]}
+            "mindegree":[]}
 
 def print_results(arr, _type=False): 
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"]))) 
@@ -92,7 +94,7 @@ def print_results(arr, _type=False):
     print("Number of connected components: " + str(arr["numero_componenti_connesse"]))
     print("Max number of nodes in connected components: " + str(arr["maxnodi_componenti_connesse"]))
     print("Lifespan: " + str(np.mean(arr["lifespan"])))
-    #print("Difference number of video with prec interval: " + str(np.mean(arr["diff_num_video_interv_prec"])))
+    print("Mean indegree: " + str(np.mean(arr["mindegree"])) +  " (std: " + str(np.std([x[1] for x in graph.in_degree()]))+ ")")
     print("********************************************************")
 numero_video = 0
 vid = []
@@ -145,6 +147,7 @@ for index, row in df.iterrows():
         STATS["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
         STATS["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
         STATS["lifespan"].append(timedelta.days)
+        STATS["mindegree"].append(gen_stats["mindegree"])
         dataintervals["nome_challenge"].append(challenge)
         dataintervals["intervallo"].append(pairs)
         dataintervals["numero_nodi"].append(gen_stats["nnodes"])
@@ -172,6 +175,8 @@ for index, row in df.iterrows():
         dataintervals["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
         dataintervals["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
         dataintervals["lifespan"].append(timedelta.days)
+        dataintervals["mindegree"].append(gen_stats["mindegree"])
+        dataintervals["mindegree_std"].append(str(np.std([x[1] for x in graph.in_degree()])))
         if pairs[0] == 0:
             numero_video = df_int["id"].count()
             vid.append(numero_video)
