@@ -41,6 +41,7 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     edges = list()
     dmap = dict()
     pos = dict()
+    lifespan_stats_days = 0
     nodestats = dict()
     df = pd.read_csv("./dataset/dataset_"+dataset+"_connections_etl.csv", sep=";")
     df['createTime'] = pd.to_datetime(df['createTime'])
@@ -51,6 +52,7 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
         lifespanCond = None
         lim_sup = df["createTime"].min() + (lifespan/100 * intervals[1])
         lim_inf = df["createTime"].min() + (lifespan/100 * intervals[0])
+        lifespan_stats_days = (lim_sup - lim_inf).days
         df = df.loc[df["createTime"].between(lim_inf, lim_sup)]
     if lifespanCond is not None:
         df = df.loc[df['createTime'] >= (df['createTime'].min() + (lifespan/100 *lifespanCond))]
@@ -109,4 +111,4 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     graph.add_edges_from(edges)
     dfnet.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
     dfinterval = df # represents the dataset of the net
-    return [graph, labels, colors, pos, nodestats, dfnet, dfinterval]
+    return [graph, labels, colors, pos, nodestats, dfnet, dfinterval, lifespan_stats_days]
