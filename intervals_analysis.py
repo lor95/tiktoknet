@@ -15,7 +15,7 @@ def graphStats(graph, _print=True):
              "density":nx.density(graph),
              "mindegree":np.mean([x[1] for x in graph.in_degree()]),
              "degree_centrality_media": sum(list(nx.degree_centrality(graph).values()))/len(list(nx.degree_centrality(graph).values())),
-             "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000)))/len(list(nx.eigenvector_centrality(graph, max_iter=100000))),
+             "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000).values()))/len(list(nx.eigenvector_centrality(graph, max_iter=100000))),
              "number_connected_components": number_connected_components(unconnected_graph),
              "maxnodes_connected_components": unconnected_graph.subgraph(Gcc[0]).number_of_nodes()
     }
@@ -111,7 +111,7 @@ for index, row in df.iterrows():
     for pairs in zip(intervals, intervals[1:]):
         plt.figure(figsize=(15,15))
         print(pairs)
-        graph, labels, colors, pos, _, _, df_int = ntx.graphCalculation(row["challenge"],colorCriteria="createTime", lifespanCond=None, intervals=list(pairs), remAutoLikes=True)
+        graph, labels, colors, pos, _, _, df_int, lfd = ntx.graphCalculation(row["challenge"],colorCriteria="createTime", lifespanCond=None, intervals=list(pairs), remAutoLikes=True)
         print(row["challenge"])
         challenge=(row["challenge"])
         nx.draw_networkx_nodes(graph,pos,node_color=colors,node_size=60)     
@@ -174,7 +174,7 @@ for index, row in df.iterrows():
         dataintervals["numero_utenti_verificati"].append(np.count_nonzero(np.where(df_int["author_verified"])[0]))
         dataintervals["numero_componenti_connesse"].append(gen_stats["number_connected_components"])
         dataintervals["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
-        dataintervals["lifespan"].append(timedelta.days)
+        dataintervals["lifespan"].append(lfd)
         dataintervals["mindegree"].append(gen_stats["mindegree"])
         dataintervals["mindegree_std"].append(str(np.std([x[1] for x in graph.in_degree()])))
         if pairs[0] == 0:
