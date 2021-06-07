@@ -17,7 +17,13 @@ def graphStats(graph, _print=True):
              "degree_centrality_media": sum(list(nx.degree_centrality(graph).values()))/len(list(nx.degree_centrality(graph).values())),
              "eigenvector_centrality": sum(list(nx.eigenvector_centrality(graph, max_iter=100000).values()))/len(list(nx.eigenvector_centrality(graph, max_iter=100000))),
              "number_connected_components": number_connected_components(unconnected_graph),
-             "maxnodes_connected_components": unconnected_graph.subgraph(Gcc[0]).number_of_nodes()
+             "maxnodes_connected_components": unconnected_graph.subgraph(Gcc[0]).number_of_nodes(),
+             "pagerank": sum(list(nx.pagerank(graph, alpha=0.9).values()))/len(list(nx.pagerank(graph, alpha=0.9).values())),
+             "closeness_centrality": sum(list(nx.closeness_centrality(graph).values()))/len(list(nx.closeness_centrality(graph).values())),
+             "betweenness_centrality": sum(list(nx.betweenness_centrality(graph).values()))/len(list(nx.betweenness_centrality(graph).values())),
+             "average_clustering":nx.average_clustering(graph),
+             "radius_max_connected_components":nx.radius(unconnected_graph.subgraph(Gcc[0])),
+             "diameter_max_connected_components":nx.diameter(unconnected_graph.subgraph(Gcc[0]))
     }
     return stats
 
@@ -50,7 +56,13 @@ dataintervals={
     'maxnodi_componenti_connesse':[],
     'lifespan':[],
     'mindegree':[],
-    'mindegree_std':[]}
+    'mindegree_std':[],
+    'pagerank':[],
+    'closeness_centrality':[],
+    'betweenness_centrality':[],
+    'average_clustering':[],
+    'radius_max_connected_components':[],
+    'diameter_max_connected_components':[]}
 
 def reset_stats():
     return {"nnodes":[],
@@ -72,7 +84,13 @@ def reset_stats():
             "numero_componenti_connesse":[],
             "maxnodi_componenti_connesse":[],
             "lifespan":[],
-            "mindegree":[]}
+            "mindegree":[],
+            "pagerank":[],
+            "closeness_centrality":[],
+            "betweenness_centrality":[],
+            "average_clustering":[],
+            "radius_max_connected_components":[],
+            "diameter_max_connected_components":[]}
 
 def print_results(arr, _type=False): 
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"]))) 
@@ -95,6 +113,12 @@ def print_results(arr, _type=False):
     print("Max number of nodes in connected components: " + str(arr["maxnodi_componenti_connesse"]))
     print("Lifespan: " + str(np.mean(arr["lifespan"])))
     print("Mean indegree: " + str(np.mean(arr["mindegree"])) +  " (std: " + str(np.std([x[1] for x in graph.in_degree()]))+ ")")
+    print("Pagerank: "+str(np.mean(arr["pagerank"])))
+    print("Closeness Centrality: " + str(np.mean(arr["closeness_centrality"])))
+    print("Betweenness Centrality: " + str(np.mean(arr["betweenness_centrality"])))
+    print("Average Clustering: " + str(np.mean(arr["average_clustering"])))
+    print("Radius max connected components: " + str(np.mean(arr["radius_max_connected_components"])))
+    print("Diameter max connected components: " + str(np.mean(arr["diameter_max_connected_components"])))
     print("********************************************************")
 numero_video = 0
 vid = []
@@ -148,6 +172,12 @@ for index, row in df.iterrows():
         STATS["maxnodi_componenti_connesse"].append(gen_stats["maxnodes_connected_components"])
         STATS["lifespan"].append(timedelta.days)
         STATS["mindegree"].append(gen_stats["mindegree"])
+        STATS["pagerank"].append(gen_stats["pagerank"])
+        STATS["closeness_centrality"].append(gen_stats["closeness_centrality"])
+        STATS["betweenness_centrality"].append(gen_stats["betweenness_centrality"])
+        STATS["average_clustering"].append(gen_stats["average_clustering"])
+        STATS["radius_max_connected_components"].append(gen_stats["radius_max_connected_components"])
+        STATS["diameter_max_connected_components"].append(gen_stats["diameter_max_connected_components"])
         dataintervals["nome_challenge"].append(challenge)
         dataintervals["intervallo"].append(pairs)
         dataintervals["numero_nodi"].append(gen_stats["nnodes"])
@@ -177,6 +207,12 @@ for index, row in df.iterrows():
         dataintervals["lifespan"].append(lfd)
         dataintervals["mindegree"].append(gen_stats["mindegree"])
         dataintervals["mindegree_std"].append(str(np.std([x[1] for x in graph.in_degree()])))
+        dataintervals["pagerank"].append(gen_stats["pagerank"])
+        dataintervals["closeness_centrality"].append(gen_stats["closeness_centrality"])
+        dataintervals["betweenness_centrality"].append(gen_stats["betweenness_centrality"])
+        dataintervals["average_clustering"].append(gen_stats["average_clustering"])
+        dataintervals["radius_max_connected_components"].append(gen_stats["radius_max_connected_components"])
+        dataintervals["diameter_max_connected_components"].append(gen_stats["diameter_max_connected_components"])
         if pairs[0] == 0:
             numero_video = df_int["id"].count()
             vid.append(numero_video)
