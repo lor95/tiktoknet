@@ -55,7 +55,7 @@ def split_in_perc(video_published):
 p_changes_by_day = {}
 for p in p_challenges_list:
     #current = pd.read_csv('./dataset/dataset_{}_connections_etl.csv'.format(p), sep=";", header=0)
-    current = nx.graphCalculation(p)[-2]
+    current = nx.graphCalculation(p)[-3]
     #print(current.shape[0])
     current['createTime'] =  pd.to_datetime(current['createTime'], format='%Y%m%d %H:%M:%S')
     video_published = current.set_index('createTime').groupby(pd.Grouper(freq='D'))["author_uniqueId"].count().to_frame()
@@ -69,7 +69,7 @@ for p in p_challenges_list:
 n_changes_by_day = {}
 for p in n_challenges_list:
     #current = pd.read_csv('./dataset/dataset_{}_connections_etl.csv'.format(p), sep=";", header=0)
-    current = nx.graphCalculation(p)[-2]
+    current = nx.graphCalculation(p)[-3]
     #print(current.shape[0])
     current['createTime'] =  pd.to_datetime(current['createTime'], format='%Y%m%d %H:%M:%S')
     video_published = current.set_index('createTime').groupby(pd.Grouper(freq='D'))["author_uniqueId"].count().to_frame()
