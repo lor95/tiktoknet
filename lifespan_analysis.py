@@ -110,7 +110,7 @@ for challenge in p_changes_by_day:
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
     plt.title(challenge, fontsize=20)    
-    xnew = np.arange(0, 100, perc_to_sum)
+    xnew = np.arange(0, 105, perc_to_sum)
     ynew = function(xnew)
     plt.plot(xnew, ynew)
     for inf in inf_points:
@@ -141,7 +141,7 @@ for challenge in n_changes_by_day:
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
     plt.title(challenge, fontsize=20)    
-    xnew = np.arange(0, 100, perc_to_sum)
+    xnew = np.arange(0, 105, perc_to_sum)
     ynew = function(xnew)
     plt.plot(xnew, ynew)
     for inf in inf_points:
