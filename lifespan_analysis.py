@@ -151,7 +151,7 @@ for challenge in n_changes_by_day:
     plt.show()
     
 intervals_d = pd.DataFrame.from_dict(intervals)
-intervals_d.to_csv('intervals.csv', index=False)
+intervals_d.to_csv('dataset/intervals.csv', index=False)
 
 '''
 plt.figure(figsize=(20, 15))
