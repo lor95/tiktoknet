@@ -3,6 +3,7 @@ import lib.challenges as challenges
 import lib.tiktok_network as nx
 import numpy as np
 import matplotlib.pyplot as plt
+from ast import literal_eval
 
 POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
@@ -20,8 +21,8 @@ NEG_CHALLENGES = ["silhouettechallenge",
                   "updownchallenge",
                   "sugarbaby"] #list of selected negative challenges
 
-POS_CHALLENGES_COND = [None, None, 91, 99.9, None, None, 50]
-NEG_CHALLENGES_COND = [60, 93, None, None, None, None, None]
+POS_CHALLENGES_COND = [None, None, None, None, None, None, None]
+NEG_CHALLENGES_COND = [None, None, None, None, None, None, None]
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
 PLOT = [[],[]]
 PLOTPOS = [[] for x in POS_CHALLENGES]
@@ -59,7 +60,6 @@ def print_results(arr, _type=False):
     text = "POSITIVE"
     if _type:
         text = "NEGATIVE"
-    '''
         for val in arr["span"]:
             PLOT[1].append(np.mean(val))
             for i in range(len(NEG_CHALLENGES)):
@@ -77,7 +77,6 @@ def print_results(arr, _type=False):
             PLOTCOUNT[0].append(np.mean(val))
             for i in range(len(POS_CHALLENGES)):
                 PLOTPOSCOUNT[i].append(val[i])
-    '''
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
     print("Mean number of edges: " + str(np.mean(arr["nedges"])) + " (std: " + str(np.std(arr["nedges"])) + ")")
@@ -113,7 +112,7 @@ for elem in ALL_CHALLENGES:
         else:
             cond = NEG_CHALLENGES_COND[counter]
         df = pd.DataFrame()
-        graph, _, _, _, nodestats, _ = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
+        graph, _, _, _, nodestats, _, _, _ = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
         gen_stats = nx.graphStats(graph, _print=False)
         for node in nodestats:
             df = df.append(nodestats[node], ignore_index=True)
@@ -149,92 +148,37 @@ for elem in ALL_CHALLENGES:
     print_results(STATS, flag)
     flag = True
     counter = 0
-MeanTrendChallenges = {'PosChallenges':PLOT[0],'NegChallenges': PLOT[1]}
-dfChallenges=pd.DataFrame.from_dict(MeanTrendChallenges, orient='index')
-dfChallenges=dfChallenges.transpose()
-dfChallenges.to_csv("dataset/meantrendchallenges.csv", sep=';', index=False)
 
-'''
-# plot
-plt.title("TikTok graph's expansion")
-plt.ylabel("mean number of nodes (normalized)")
-plt.xlabel("% trend's lifespan")
-plt.xticks(range(0,101,5))
-plt.grid("--")
-plt.gca().set_ylim(ymin=0, ymax=1)
-plt.gca().set_xlim(xmin=0, xmax=100)
-plt.plot(range(1,101), PLOT[0])
-plt.plot(range(1,101), PLOT[1])
-plt.legend(["positive trend's graph expansion", "negative trend's graph expansion"])
-plt.show()
-'''
-'''
-plt.title("TikTok graph's expansion")
-plt.ylabel("")
-plt.xlabel("% trend's lifespan")
-plt.xticks(range(0,101,5))
-plt.grid("--")
-#plt.gca().set_ylim(ymin=0, ymax=0.04)
-plt.gca().set_ylim(ymin=0, ymax=20)
-plt.gca().set_xlim(xmin=0, xmax=100)
-print(len(PLOTPOSCOUNT[0]))
-plt.plot(range(1,101), PLOTCOUNT[0])
-'''
-#plt.plot(range(1,101), PLOT[0])
-'''
-z,_,_,_,_ = np.polyfit(range(1,101), PLOTPOSCOUNT[0], 4, full=True)
-p = np.poly1d(z)
-q = p.deriv()
-print(p)
-print(q)
-'''
-#plt.plot(range(1,101), q(range(1,101)))
-#plt.plot(range(1,101), p(range(1,101)))
-#plt.plot(range(1,101), PLOTCOUNT[1])
-
-#plt.plot(range(1,101), PLOT[1])
-'''
-z,_,_,_,_ = np.polyfit(range(1,101), PLOT[1], 4, full=True)
-p = np.poly1d(z)
-q = p.deriv()
-'''
-#plt.plot(range(1,101), p(range(1,101)))
-#plt.plot(range(1,101), q(range(1,101)))
-#plt.legend(["positive trend's deriv"])
-#plt.show()
-
-
+intervals = pd.read_csv('dataset/intervals.csv', sep=',')
+#intervals['points'] = intervals['points'].apply(literal_eval)
 #plotpos
-'''
-plt.title("TikTok graph's expansion (positive challenges)")
-plt.ylabel("mean number of nodes (normalized)")
-plt.xlabel("% trend's lifespan")
-plt.xticks(range(0,101,5))
-plt.grid("--")
-plt.gca().set_ylim(ymin=0, ymax=1)
-plt.gca().set_xlim(xmin=0, xmax=100)
+
 for i in range(len(POS_CHALLENGES)):
-    plt.plot(range(1,101), PLOTPOS[i], label=POS_CHALLENGES[i])
-    z,_,_,_,_ = np.polyfit(range(1,101), PLOTPOS[i], 4, full=True)
-    p = np.poly1d(z)
-    q = p.deriv().deriv()
-    #plt.plot(range(1,101), p(range(1,101)))
-    print(POS_CHALLENGES[i] + ': ' + str(np.roots(q)))
-plt.plot(range(1,101), PLOT[0], linestyle='dashed', color='red', label='mean positive challenges graph expansion') #add mean positive dashed line
-plt.legend()
-plt.show()
+    int_ = intervals.loc[intervals['challenge'] == POS_CHALLENGES[i]].iloc[:].values[0]
+    plt.title(POS_CHALLENGES[i]+" graph's expansion (positive)")
+    plt.ylabel("mean number of nodes")
+    plt.xlabel("% trend's lifespan")
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.gca().set_xlim(xmin=0, xmax=100)
+    plt.plot(range(1,101), PLOTPOSCOUNT[i], label=POS_CHALLENGES[i])
+    for point in literal_eval(int_[2]):
+        if point != 100:
+            plt.axvline(x=point,color='r', linewidth=2)
+    plt.show()
 
 #plotneg
-plt.title("TikTok graph's expansion (negative challenges)")
-plt.ylabel("mean number of nodes (normalized)")
-plt.xlabel("% trend's lifespan")
-plt.xticks(range(0,101,5))
-plt.grid("--")
-plt.gca().set_ylim(ymin=0, ymax=1)
-plt.gca().set_xlim(xmin=0, xmax=100)
+
 for i in range(len(NEG_CHALLENGES)):
-    plt.plot(range(1,101), PLOTNEG[i], label=NEG_CHALLENGES[i])
-plt.plot(range(1,101), PLOT[1], linestyle='dashed', color='red', label='mean negative challenges graph expansion') 
-plt.legend()
-plt.show()
-'''
+    int_ = intervals.loc[intervals['challenge'] == POS_CHALLENGES[i]].iloc[:].values[0]
+    plt.title(NEG_CHALLENGES[i]+" graph's expansion (negative)")
+    plt.ylabel("mean number of nodes")
+    plt.xlabel("% trend's lifespan")
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.gca().set_xlim(xmin=0, xmax=100)
+    plt.plot(range(1,101), PLOTNEGCOUNT[i], label=NEG_CHALLENGES[i])
+    for point in literal_eval(int_[2]):
+        if point != 100:
+            plt.axvline(x=point, color='r', linewidth=2)
+    plt.show()
