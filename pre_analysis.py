@@ -30,10 +30,13 @@ PLOTNEG = [[] for x in NEG_CHALLENGES]
 PLOTCOUNT = [[],[]]
 PLOTPOSCOUNT = [[] for x in POS_CHALLENGES]
 PLOTNEGCOUNT = [[] for x in NEG_CHALLENGES]
+PLOTPOSAGGCOUNT = [[] for x in POS_CHALLENGES]
+PLOTNEGAGGCOUNT = [[] for x in NEG_CHALLENGES]
 
 def reset_stats():
     return {"span":[[] for x in range(0,100)],
             "n_nodes":[[] for x in range(0,100)],
+            "n%_nodes":[[] for x in range(0,21)],
             "nnodes":[],
             "nedges":[],
             "mindegree":[],
@@ -67,7 +70,10 @@ def print_results(arr, _type=False):
         for val in arr["n_nodes"]:
             PLOTCOUNT[1].append(np.mean(val))
             for i in range(len(NEG_CHALLENGES)):
-                PLOTNEGCOUNT[i].append(val[i])
+                PLOTNEGCOUNT[i].append(val[i])        
+        for val in arr["n%_nodes"]:
+            for i in range(len(NEG_CHALLENGES)):
+                PLOTNEGAGGCOUNT[i].append(val[i])
     else:
         for val in arr["span"]:
             PLOT[0].append(np.mean(val))
@@ -77,6 +83,9 @@ def print_results(arr, _type=False):
             PLOTCOUNT[0].append(np.mean(val))
             for i in range(len(POS_CHALLENGES)):
                 PLOTPOSCOUNT[i].append(val[i])
+        for val in arr["n%_nodes"]:
+            for i in range(len(POS_CHALLENGES)):
+                PLOTPOSAGGCOUNT[i].append(val[i])
     print("************************"+text+"************************")
     print("Mean number of nodes: " + str(np.mean(arr["nnodes"])) + " (std: " + str(np.std(arr["nnodes"])) + ")")
     print("Mean number of edges: " + str(np.mean(arr["nedges"])) + " (std: " + str(np.std(arr["nedges"])) + ")")
@@ -118,10 +127,17 @@ for elem in ALL_CHALLENGES:
             df = df.append(nodestats[node], ignore_index=True)
         df["createTime"] = pd.to_datetime(df["createTime"]) # convert to datetime
         timedelta = df["createTime"].max() - df["createTime"].min()
+        incr = 0
         for i in range(0,100):
             STATS["span"][i].append((df.loc[df["createTime"] <= (df["createTime"].min() + (timedelta*(i+1)/100))].shape[0])/gen_stats["nnodes"])
             mask = (df["createTime"] <= (df["createTime"].min() + (timedelta*(i+1)/100))) & (df["createTime"] > (df["createTime"].min() + (timedelta*(i)/100)))
             STATS["n_nodes"][i].append(df.loc[mask].shape[0])
+            if i == 0 or (i+1)%5==0:
+                incr = incr + df.loc[mask].shape[0]
+                STATS["n%_nodes"][int((i+1)/5)].append(incr)
+                incr = 0
+            else:
+                incr = incr + df.loc[mask].shape[0]
         STATS["nnodes"].append(gen_stats["nnodes"])
         STATS["nedges"].append(gen_stats["nedges"])
         STATS["mindegree"].append(gen_stats["mindegree"])
@@ -150,7 +166,7 @@ for elem in ALL_CHALLENGES:
     counter = 0
 
 intervals = pd.read_csv('dataset/intervals.csv', sep=',')
-#intervals['points'] = intervals['points'].apply(literal_eval)
+
 #plotpos
 
 for i in range(len(POS_CHALLENGES)):
@@ -161,7 +177,7 @@ for i in range(len(POS_CHALLENGES)):
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(1,101), PLOTPOSCOUNT[i], label=POS_CHALLENGES[i])
+    plt.plot(range(0,101,5), PLOTPOSAGGCOUNT[i], label=POS_CHALLENGES[i]) #PLOTPOSCOUNT
     for point in literal_eval(int_[2]):
         if point != 100:
             plt.axvline(x=point,color='r', linewidth=2)
@@ -170,14 +186,14 @@ for i in range(len(POS_CHALLENGES)):
 #plotneg
 
 for i in range(len(NEG_CHALLENGES)):
-    int_ = intervals.loc[intervals['challenge'] == POS_CHALLENGES[i]].iloc[:].values[0]
+    int_ = intervals.loc[intervals['challenge'] == NEG_CHALLENGES[i]].iloc[:].values[0]
     plt.title(NEG_CHALLENGES[i]+" graph's expansion (negative)")
     plt.ylabel("mean number of nodes")
     plt.xlabel("% trend's lifespan")
-    plt.xticks(range(0,101,5))
+    plt.xticks(range(1,100,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(1,101), PLOTNEGCOUNT[i], label=NEG_CHALLENGES[i])
+    plt.plot(range(0,101,5), PLOTNEGAGGCOUNT[i], label=NEG_CHALLENGES[i]) #PLOTNEGCOUNT
     for point in literal_eval(int_[2]):
         if point != 100:
             plt.axvline(x=point, color='r', linewidth=2)
