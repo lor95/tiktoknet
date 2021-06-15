@@ -200,7 +200,7 @@ for i in range(len(POS_CHALLENGES)):
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(0,101,5), [0]+PLOTPOSVIDEOCOUNT[i], label=POS_CHALLENGES[i]) #PLOTPOSCOUNT
+    plt.plot(range(0,101,5), [0]+PLOTPOSFOLLOWINGCOUNT[i], label=POS_CHALLENGES[i]) #PLOTPOSCOUNT
     for point in literal_eval(int_[2]):
         if point != 100:
             plt.axvline(x=point,color='r', linewidth=2)
@@ -216,7 +216,7 @@ for i in range(len(NEG_CHALLENGES)):
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(0,100,5), [0]+PLOTNEGVIDEOCOUNT[i], label=NEG_CHALLENGES[i]) #PLOTNEGCOUNT
+    plt.plot(range(0,101,5), [0]+PLOTNEGFOLLOWINGCOUNT[i], label=NEG_CHALLENGES[i]) #PLOTNEGCOUNT
     for point in literal_eval(int_[2]):
         if point != 100:
             plt.axvline(x=point, color='r', linewidth=2)
