@@ -53,7 +53,7 @@ for elem in ALL_CHALLENGES:
     STATS = reset_stats()
     for challenge in elem:
         for i in range(0,100,5):
-            graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [0,i+5])
+            graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [1,i+5])
             graph = graph.to_undirected()
             STATS['density'][int(round(i/5))].append(nx.density(graph))
             if(graph.number_of_nodes() == 0):
@@ -65,8 +65,8 @@ for elem in ALL_CHALLENGES:
 
 #plotpos
 for i in range(len(POS_CHALLENGES)):
-    plt.title(POS_CHALLENGES[i]+" graph density (positive)")
-    plt.ylabel("density")
+    plt.title(POS_CHALLENGES[i]+" graph avg clustering coefficient (positive)")
+    plt.ylabel("clustering coefficient")
     plt.xlabel("% lifespan")
     plt.xticks(range(0,101,5))
     plt.grid("--")
@@ -74,6 +74,33 @@ for i in range(len(POS_CHALLENGES)):
     plt.plot(range(0,101,5), [0]+PLOTCOEFF[0][i], label=POS_CHALLENGES[i])
     #    if point != 100:
     #        plt.axvline(x=point,color='r', linewidth=2)
+    plt.savefig('images/pos_clust_'+POS_CHALLENGES[i]+'.png')
+    plt.show()
+
+for i in range(len(NEG_CHALLENGES)):
+    plt.title(NEG_CHALLENGES[i]+" graph avg clustering coefficient (positive)")
+    plt.ylabel("clustering coefficient")
+    plt.xlabel("% lifespan")
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.gca().set_xlim(xmin=0, xmax=100)
+    plt.plot(range(0,101,5), [0]+PLOTCOEFF[1][i], label=NEG_CHALLENGES[i])
+    #    if point != 100:
+    #        plt.axvline(x=point,color='r', linewidth=2)
+    plt.savefig('images/neg_clust_'+NEG_CHALLENGES[i]+'.png')
+    plt.show()
+
+for i in range(len(POS_CHALLENGES)):
+    plt.title(POS_CHALLENGES[i]+" graph density (positive)")
+    plt.ylabel("density")
+    plt.xlabel("% lifespan")
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.gca().set_xlim(xmin=0, xmax=100)
+    plt.plot(range(0,101,5), [0]+PLOTDENSITY[0][i], label=POS_CHALLENGES[i])
+    #    if point != 100:
+    #        plt.axvline(x=point,color='r', linewidth=2)
+    plt.savefig('images/pos_density_'+POS_CHALLENGES[i]+'.png')
     plt.show()
 
 for i in range(len(NEG_CHALLENGES)):
@@ -83,7 +110,8 @@ for i in range(len(NEG_CHALLENGES)):
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(0,101,5), [0]+PLOTCOEFF[1][i], label=NEG_CHALLENGES[i])
+    plt.plot(range(0,101,5), [0]+PLOTDENSITY[1][i], label=NEG_CHALLENGES[i])
     #    if point != 100:
     #        plt.axvline(x=point,color='r', linewidth=2)
+    plt.savefig('images/neg_density_'+NEG_CHALLENGES[i]+'.png')
     plt.show()
