@@ -49,6 +49,7 @@ for elem in ALL_CHALLENGES:
     for challenge in elem:
         for i in range(0,100,5):
             graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [i,i+5])
+            graph = graph.to_undirected()
             STATS['density'][int(round(i/5))].append(nx.density(graph))
         counter += 1
     print_results(STATS, flag)
