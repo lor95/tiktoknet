@@ -24,7 +24,6 @@ NEG_CHALLENGES = ["silhouettechallenge",
 #POS_CHALLENGES_COND = [None, None, None, None, None, None, None]
 #NEG_CHALLENGES_COND = [None, None, None, None, None, None, None]
 ALL_CHALLENGES = [POS_CHALLENGES, NEG_CHALLENGES]
-PLOT = [[],[]]
 PLOTDENSITY = [[[] for x in POS_CHALLENGES],[[] for x in NEG_CHALLENGES]]
 PLOTCOEFF = [[[] for x in POS_CHALLENGES],[[] for x in NEG_CHALLENGES]]
 
@@ -53,16 +52,18 @@ for elem in ALL_CHALLENGES:
     STATS = reset_stats()
     for challenge in elem:
         for i in range(0,100,5):
-            graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [1,i+5])
+            graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [i,i+5])
             graph = graph.to_undirected()
+            '''
             STATS['density'][int(round(i/5))].append(nx.density(graph))
             if(graph.number_of_nodes() == 0):
                 STATS['coeff'][int(round(i/5))].append(0)
             else:
                 STATS['coeff'][int(round(i/5))].append(nx.average_clustering(graph))
+            '''
     print_results(STATS, flag)
     flag = True
-
+'''
 #plotpos
 for i in range(len(POS_CHALLENGES)):
     plt.title(POS_CHALLENGES[i]+" graph avg clustering coefficient (positive)")
@@ -115,3 +116,4 @@ for i in range(len(NEG_CHALLENGES)):
     #        plt.axvline(x=point,color='r', linewidth=2)
     plt.savefig('images/neg_density_'+NEG_CHALLENGES[i]+'.png')
     plt.show()
+'''
