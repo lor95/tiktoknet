@@ -3,6 +3,7 @@ import networkx as nx
 import numpy as np
 from random import randrange
 import math
+import datetime
 
 def ETL2(dataFrame, remAutoLikes):
     dataFrame = dataFrame[dataFrame["likedBy_uniqueId"]!= "-"]
@@ -37,6 +38,7 @@ def graphStats(graph, _print=True):
 def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None, intervals = None, remAutoLikes = True):
     nodes = set()
     labels = dict()
+    dates = dict()
     colors = list()
     edges = list()
     dmap = dict()
@@ -47,7 +49,8 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     df['createTime'] = pd.to_datetime(df['createTime'])
     dtemp = df.copy()
     df = ETL2(df, remAutoLikes)
-    lifespan = df['createTime'].max() - df['createTime'].min()
+    max_ = df['createTime'].max()
+    lifespan = max_ - df['createTime'].min()
     if intervals is not None:
         lifespanCond = None
         lim_sup = df["createTime"].min() + (lifespan/100 * intervals[1])
@@ -60,8 +63,10 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     for index, row in df.iterrows():
         nodes.add(int(row["author_id"]))
         labels[int(row["author_id"])] = row["author_uniqueId"]
+        dates[int(row["author_id"])] = int((row["createTime"] - pd.Timestamp('19700101')).total_seconds())
         nodes.add(int(row["likedBy_id"]))
         labels[int(row["likedBy_id"])] = row["likedBy_uniqueId"]
+        dates[int(row["likedBy_id"])] = int((max_ - pd.Timestamp('19700101')).total_seconds())
         edg=[]
         source=int(row['likedBy_id'])
         target=int(row['author_id'])
@@ -108,6 +113,8 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
                 pos[node] = position_1(val)
     graph = nx.DiGraph()
     graph.add_nodes_from(nodes)
+    nx.set_node_attributes(graph, labels, "label")
+    nx.set_node_attributes(graph, dates, "datetime")
     graph.add_edges_from(edges)
     dfnet.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
     dfinterval = df # represents the dataset of the net
