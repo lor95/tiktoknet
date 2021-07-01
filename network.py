@@ -4,8 +4,8 @@ import lib.tiktok_network as ntx
 
 #plt.figure(figsize=(15,15))
 for i in range(0,100,10):
-    graph, labels, colors, pos, _, _, _, _ = ntx.graphCalculation("silhouettechallenge",colorCriteria="createTime", intervals=[0,i+10])
-    nx.write_gexf(graph, "dataset/silhouettechallenge"+str(int(i+10))+".gexf", prettyprint=True)
+    graph, labels, colors, pos, _, _, _, _ = ntx.graphCalculation("bussitchallenge",colorCriteria="createTime", intervals=[0,i+10])
+    nx.write_gexf(graph, "dataset/bussitchallenge"+str(int(i+10))+".gexf", prettyprint=True)
 '''
 ntx.graphStats(graph)
 nx.draw_networkx_nodes(graph,pos,node_color=colors,node_size=60)     
