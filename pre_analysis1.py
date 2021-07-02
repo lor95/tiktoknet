@@ -61,8 +61,29 @@ flag = False
 for elem in ALL_CHALLENGES:
     STATS = reset_stats()
     for challenge in elem:
+        df_main = pd.DataFrame()
+        df_main['in_degree'] = 0
+        df_main['out_degree'] = 0
         for i in range(0,100,5):
-            graph, _, _, _, _, _, _, _ = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [0,i+5])
+            graph, _, _, _, _, _, _, _, dtemp = ntx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], intervals = [0,i+5])
+            if i == 95:
+                for id_, value in graph.in_degree(): #influencer
+                    if value > 2:
+                        df_main = df_main.append(dtemp.loc[dtemp['author_id'].astype(np.int64) == id_].iloc[:])
+                        df_main.loc[df_main['author_id'] == id_, ['in_degree']] = value
+                for id_, value in graph.out_degree(): #influenced
+                    if value > 2:
+                        df_main = df_main.append(dtemp.loc[dtemp['author_id'].astype(np.int64) == id_].iloc[:])
+                        df_main.loc[df_main['author_id'] == id_, ['out_degree']] = value
+                df_main.drop_duplicates(subset ='author_id', keep = 'first', inplace = True)
+                df_main['in_degree'] = df_main['in_degree'].replace(np.nan, 0)
+                df_main['out_degree'] = df_main['out_degree'].replace(np.nan, 0)
+                df_main = df_main.drop(['id','createTime','video_id','video_duration','music_id',
+                'music_title','music_authorName','stats_diggCount','stats_shareCount',
+                'stats_commentCount','stats_playCount','duetInfo_duetFromId','duetEnabled',
+                'likedBy_id','likedBy_secUid','likedBy_uniqueId', 'author_secUid'], axis=1)
+                df_main['author_id'] = df_main['author_id'].astype("string")
+                df_main.to_csv('dataset/authors/' + challenge + '_inf.csv', sep=';', index=False)
             graph = graph.to_undirected()
             # c_number = list(nx.core_number(graph).values())
             # core_df = core_df.append({'challenge':challenge+str(i)+"/"+str(i+5),
@@ -71,6 +92,7 @@ for elem in ALL_CHALLENGES:
             #                             "number_of_3_core":c_number.count(3),
             #                             "number_of_4_core":c_number.count(4)}, ignore_index=True)
             STATS['n_ccomponents'][int(round(i/5))].append(nx.number_connected_components(graph))
+
             '''
             STATS['density'][int(round(i/5))].append(nx.density(graph))
             if(graph.number_of_nodes() == 0):

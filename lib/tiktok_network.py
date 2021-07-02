@@ -118,4 +118,4 @@ def graphCalculation(dataset, colorCriteria = "createTime", lifespanCond = None,
     graph.add_edges_from(edges)
     dfnet.drop_duplicates(subset ='author_id',keep = 'first', inplace = True)
     dfinterval = df # represents the dataset of the net
-    return [graph, labels, colors, pos, nodestats, dfnet, dfinterval, lifespan_stats_days]
+    return [graph, labels, colors, pos, nodestats, dfnet, dfinterval, lifespan_stats_days, dtemp]

@@ -135,7 +135,7 @@ for index, row in df.iterrows():
     for pairs in zip(intervals, intervals[1:]):
         plt.figure(figsize=(15,15))
         print(pairs)
-        graph, labels, colors, pos, _, _, df_int, lfd = ntx.graphCalculation(row["challenge"],colorCriteria="createTime", lifespanCond=None, intervals=list(pairs), remAutoLikes=True)
+        graph, labels, colors, pos, _, _, df_int, lfd, _ = ntx.graphCalculation(row["challenge"],colorCriteria="createTime", lifespanCond=None, intervals=list(pairs), remAutoLikes=True)
         print(row["challenge"])
         challenge=(row["challenge"])
         nx.draw_networkx_nodes(graph,pos,node_color=colors,node_size=60)     
