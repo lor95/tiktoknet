@@ -95,6 +95,7 @@ for challenge in p_changes_by_day:
     current = p_changes_by_day[challenge]
     s =100000000
     if challenge == 'ITookANap':
+
         s = 410
     function = interpolate.UnivariateSpline(current.index,current["video_published"], k=4, s=s)
     first_derivate = function.derivative(n=1)
@@ -109,14 +110,21 @@ for challenge in p_changes_by_day:
     valori_punti = [function(p) for p in punti_andamenti]
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
-    plt.title(challenge, fontsize=20)    
+    plt.title(challenge.lower())    
     xnew = np.arange(0, 105, perc_to_sum)
+    
+    plt.gca().set_xlim(xmin=0, xmax=100)
     ynew = function(xnew)
     plt.plot(xnew, ynew)
     for inf in inf_points:
-        plt.axvline(x=inf)
-    plt.xlabel("% of lifespan", fontsize=16)
-    plt.ylabel("Number of nodes", fontsize=16)
+        plt.axvline(x=inf, color="red")
+
+    
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.xlabel("% lifespan")
+    plt.ylabel("number of nodes")
+    plt.savefig('dataset/'+challenge+"plot.png")
     plt.show()
     
 for challenge in n_changes_by_day:
@@ -140,14 +148,20 @@ for challenge in n_changes_by_day:
     valori_punti = [function(p) for p in punti_andamenti]
     differenze = [j-i for i, j in zip(valori_punti[:-1], valori_punti[1:])]
     intervals["diff_videos_intervals"].append(differenze)
-    plt.title(challenge, fontsize=20)    
+    plt.title(challenge)    
     xnew = np.arange(0, 105, perc_to_sum)
     ynew = function(xnew)
     plt.plot(xnew, ynew)
+    
+    plt.gca().set_xlim(xmin=0, xmax=100)
     for inf in inf_points:
-        plt.axvline(x=inf)
-    plt.xlabel("% of lifespan", fontsize=16)
-    plt.ylabel("Number of nodes", fontsize=16)
+        plt.axvline(x=inf, color="red")
+        
+    plt.xticks(range(0,101,5))
+    plt.grid("--")
+    plt.xlabel("% lifespan")
+    plt.ylabel("number of nodes")
+    plt.savefig('dataset/'+challenge+"plot.png")
     plt.show()
     
 intervals_d = pd.DataFrame.from_dict(intervals)

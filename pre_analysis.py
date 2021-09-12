@@ -4,7 +4,8 @@ import lib.tiktok_network as nx
 import numpy as np
 import matplotlib.pyplot as plt
 from ast import literal_eval
-
+import time
+start_time = time.time()
 POS_CHALLENGES = ["bussitchallenge",
                   "copinesdancechallenge",
                   "emojichallenge",
@@ -139,10 +140,10 @@ for elem in ALL_CHALLENGES:
         else:
             cond = NEG_CHALLENGES_COND[counter]
         df = pd.DataFrame()
-        graph, _, _, _, nodestats, df, _, _, _ = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0], lifespanCond=cond)
+        graph, _, _, _, nodestats, _, _, _, _ = nx.graphCalculation(challenges.getChallenge(challenge)["name"].split(",")[0])
         gen_stats = nx.graphStats(graph, _print=False)
-        #for node in nodestats:
-        #    df = df.append(nodestats[node], ignore_index=True)
+        for node in nodestats:
+            df = df.append(nodestats[node], ignore_index=True)
         df["createTime"] = pd.to_datetime(df["createTime"]) # convert to datetime
         timedelta = df["createTime"].max() - df["createTime"].min()
         incr = 0
@@ -189,35 +190,47 @@ for elem in ALL_CHALLENGES:
     counter = 0
 
 intervals = pd.read_csv('dataset/intervals.csv', sep=',')
-
+print("--- %s seconds ---" % (time.time() - start_time))
 #plotpos
-
+'''
+plt.title("TikTok trend expansion")
+plt.ylabel("mean number of videos (normalized)")
+plt.xlabel("% lifespan")
+plt.xticks(range(0,101,5))
+plt.grid("--")
+plt.gca().set_ylim(ymin=0, ymax=1)
+plt.gca().set_xlim(xmin=0, xmax=100)
+plt.plot(range(1,101), PLOT[0])
+plt.plot(range(1,101), PLOT[1])
+plt.legend(["positive trend - graph expansion", "negative trend - graph expansion"])
+plt.show()
+'''
 for i in range(len(POS_CHALLENGES)):
-    int_ = intervals.loc[intervals['challenge'] == POS_CHALLENGES[i]].iloc[:].values[0]
-    plt.title(POS_CHALLENGES[i]+" graph's expansion (positive)")
-    plt.ylabel("mean number of nodes")
-    plt.xlabel("% trend's lifespan")
+    #int_ = intervals.loc[intervals['challenge'] == POS_CHALLENGES[i]].iloc[:].values[0]
+    plt.title(POS_CHALLENGES[i].lower())
+    plt.ylabel("number of nodes")
+    plt.xlabel("% lifespan")
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(0,101,5), [0]+PLOTPOSFOLLOWINGCOUNT[i], label=POS_CHALLENGES[i]) #PLOTPOSCOUNT
-    for point in literal_eval(int_[2]):
-        if point != 100:
-            plt.axvline(x=point,color='r', linewidth=2)
+
+    plt.plot(range(0,101,1), [0]+PLOTPOSCOUNT[i], label=POS_CHALLENGES[i]) #PLOTPOSCOUNT
+    plt.savefig("dataset/authors/"+POS_CHALLENGES[i]+"_raw.png")
     plt.show()
 
 #plotneg
 
 for i in range(len(NEG_CHALLENGES)):
-    int_ = intervals.loc[intervals['challenge'] == NEG_CHALLENGES[i]].iloc[:].values[0]
-    plt.title(NEG_CHALLENGES[i]+" graph's expansion (negative)")
-    plt.ylabel("mean number of nodes")
-    plt.xlabel("% trend's lifespan")
+    #int_ = intervals.loc[intervals['challenge'] == NEG_CHALLENGES[i]].iloc[:].values[0]
+    if NEG_CHALLENGES[i] == 'bugsbunny':
+        NEG_CHALLENGES[i] = 'bugsbunnychallenge'
+    plt.title(NEG_CHALLENGES[i])
+    plt.ylabel("number of nodes")
+    plt.xlabel("% lifespan")
     plt.xticks(range(0,101,5))
     plt.grid("--")
     plt.gca().set_xlim(xmin=0, xmax=100)
-    plt.plot(range(0,101,5), [0]+PLOTNEGFOLLOWINGCOUNT[i], label=NEG_CHALLENGES[i]) #PLOTNEGCOUNT
-    for point in literal_eval(int_[2]):
-        if point != 100:
-            plt.axvline(x=point, color='r', linewidth=2)
+    plt.plot(range(0,101,1), [0]+PLOTNEGCOUNT[i], label=NEG_CHALLENGES[i]) #PLOTNEGCOUNT
+    plt.savefig("dataset/authors/"+NEG_CHALLENGES[i]+"_raw.png")
+
     plt.show()
